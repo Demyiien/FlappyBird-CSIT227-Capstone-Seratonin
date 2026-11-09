@@ -1,0 +1,51 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+
+public class TableGameScreen extends JFrame {
+
+    private JTable table1;
+    private JPanel panel1;
+
+    public TableGameScreen() {
+
+        panel1 = new JPanel(new GridBagLayout());
+
+        DefaultTableModel model = new DefaultTableModel(64, 128);
+
+        table1 = new JTable(model);
+
+        table1.setRowHeight(12);
+
+        for (int i = 0; i < 128; i++) {
+            table1.getColumnModel().getColumn(i).setPreferredWidth(12);
+            table1.getColumnModel().getColumn(i).setMinWidth(12);
+            table1.getColumnModel().getColumn(i).setMaxWidth(12);
+        }
+
+        table1.setIntercellSpacing(new Dimension(0, 0));
+        table1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table1.setShowGrid(true);
+        table1.setGridColor(Color.GRAY);
+        table1.setTableHeader(null);
+
+        table1.setPreferredScrollableViewportSize(new Dimension(768, 768));
+
+        panel1.add(table1, new GridBagConstraints());
+
+        setTitle("Table Game Screen");
+        setContentPane(panel1);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+    }
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+            TableGameScreen screen = new TableGameScreen();
+            screen.setVisible(true);
+        });
+
+    }
+}
