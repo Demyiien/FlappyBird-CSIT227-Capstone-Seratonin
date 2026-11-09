@@ -1,8 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Random;
 
 public class TableGameScreen extends JFrame {
 
@@ -32,76 +30,9 @@ public class TableGameScreen extends JFrame {
 
         DefaultTableModel model = new DefaultTableModel(rows, cols);
 
-        // Bird starting position on the grid
-        int birdRow = 14;
-        int birdCol = 8;
-
-        // Scale the bird to fit a 2x2 cell area (48x48 px)
-        int birdWidth = 2 * cellSize;
-        int birdHeight = 2 * cellSize;
-        Image originalBird = new ImageIcon("assets/images/flappy-icon.png").getImage();
-
-        BufferedImage bufferedBird = new BufferedImage(birdWidth, birdHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = bufferedBird.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.drawImage(originalBird, 0, 0, birdWidth, birdHeight, null);
-        g2d.dispose();
-
-        // Split the bird image into 4 cells (upper-left, upper-right, lower-left, lower-right)
-        ImageIcon upperLeftIcon = new ImageIcon(bufferedBird.getSubimage(0, 0, cellSize, cellSize));
-        ImageIcon upperRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, 0, cellSize, cellSize));
-        ImageIcon lowerLeftIcon = new ImageIcon(bufferedBird.getSubimage(0, cellSize, cellSize, cellSize));
-        ImageIcon lowerRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, cellSize, cellSize, cellSize));
-
-        // Load pipe image and put it in a BufferedImage so we can crop it
-        Image originalPipe = new ImageIcon("assets/images/pipe.png").getImage();
-        int srcWidth = originalPipe.getWidth(null);
-        int srcHeight = originalPipe.getHeight(null);
-
-        BufferedImage fullPipe = new BufferedImage(srcWidth, srcHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gPipe = fullPipe.createGraphics();
-        gPipe.drawImage(originalPipe, 0, 0, null);
-        gPipe.dispose();
-
-        // Crop out the empty sides of pipe.png and separate the top rim from the bottom body
-        int cropX = 67;
-        int cropW = 271;
-        BufferedImage rawPipeTop = fullPipe.getSubimage(cropX, 2, cropW, 110);
-        BufferedImage rawPipeBottom = fullPipe.getSubimage(cropX, 113, cropW, 395);
-
-        int pipeCols = 3; // pipe is 3 cells wide
-        int pipePixelWidth = pipeCols * cellSize;
-
-        // Resize the pipe rim and body to match the width of 3 cells
-        BufferedImage scaledPipeTop = new BufferedImage(pipePixelWidth, cellSize, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gTop = scaledPipeTop.createGraphics();
-        gTop.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gTop.drawImage(rawPipeTop, 0, 0, pipePixelWidth, cellSize, null);
-        gTop.dispose();
-
-        BufferedImage scaledPipeBottom = new BufferedImage(pipePixelWidth, cellSize, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gBot = scaledPipeBottom.createGraphics();
-        gBot.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gBot.drawImage(rawPipeBottom, 0, 0, pipePixelWidth, cellSize, null);
-        gBot.dispose();
-
-        // Slice the pipe rim and body into 3 columns (left, middle, right)
-        ImageIcon[] pipeTopIcons = new ImageIcon[pipeCols];
-        ImageIcon[] pipeBottomIcons = new ImageIcon[pipeCols];
-        for (int c = 0; c < pipeCols; c++) {
-            pipeTopIcons[c] = new ImageIcon(scaledPipeTop.getSubimage(c * cellSize, 0, cellSize, cellSize));
-            pipeBottomIcons[c] = new ImageIcon(scaledPipeBottom.getSubimage(c * cellSize, 0, cellSize, cellSize));
-        }
-
-        // Set pipe column and randomize heights (minimum size is 3x2 for both pipes)
-        int pipeCol = 36;
-        int minPipeHeight = 2;
-        int gapRows = 8; // non-collision space between top and bottom pipes
-
-        Random random = new Random();
-        int maxTopHeight = rows - gapRows - minPipeHeight;
-        int topPipeHeight = minPipeHeight + random.nextInt(maxTopHeight - minPipeHeight + 1);
-        int bottomPipeStartRow = topPipeHeight + gapRows;
+        // Initialize the bird and pipe objects
+        Bird bird = new Bird(14, 8, cellSize);
+        Pipe pipe = new Pipe(36, rows, cellSize);
 
         table1 = new JTable(model);
 
@@ -157,31 +88,14 @@ public class TableGameScreen extends JFrame {
                 cell.setText("");
                 cell.setIcon(null);
 
-                // Draw the 4 parts of the bird
-                if (row == birdRow && column == birdCol) {
-                    cell.setIcon(upperLeftIcon);
-                } else if (row == birdRow && column == birdCol + 1) {
-                    cell.setIcon(upperRightIcon);
-                } else if (row == birdRow + 1 && column == birdCol) {
-                    cell.setIcon(lowerLeftIcon);
-                } else if (row == birdRow + 1 && column == birdCol + 1) {
-                    cell.setIcon(lowerRightIcon);
-                }
-                // Draw the top and bottom pipes
-                else if (column >= pipeCol && column < pipeCol + pipeCols) {
-                    int pipePartCol = column - pipeCol;
-
-                    // Top pipe: body on top, rim right above the gap
-                    if (row < topPipeHeight - 1) {
-                        cell.setIcon(pipeBottomIcons[pipePartCol]);
-                    } else if (row == topPipeHeight - 1) {
-                        cell.setIcon(pipeTopIcons[pipePartCol]);
-                    }
-                    // Bottom pipe: rim right below the gap, body going down to the bottom
-                    else if (row == bottomPipeStartRow) {
-                        cell.setIcon(pipeTopIcons[pipePartCol]);
-                    } else if (row > bottomPipeStartRow) {
-                        cell.setIcon(pipeBottomIcons[pipePartCol]);
+                // Check if the current cell belongs to the bird or the pipe
+                ImageIcon birdIcon = bird.getIconAt(row, column);
+                if (birdIcon != null) {
+                    cell.setIcon(birdIcon);
+                } else {
+                    ImageIcon pipeIcon = pipe.getIconAt(row, column);
+                    if (pipeIcon != null) {
+                        cell.setIcon(pipeIcon);
                     }
                 }
 
