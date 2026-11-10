@@ -5,7 +5,7 @@ public class Gravity {
     private final Timer timer;
 
     public Gravity(Bird bird, JTable table, int totalRows) {
-        timer = new Timer(25, e -> {
+        timer = new Timer(35, e -> {
             if (bird.isFlying()) {
                 return;
             }
