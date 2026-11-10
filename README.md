@@ -51,13 +51,13 @@ We use a protected two-branch workflow (`main` and `dev`). **Never push or open 
 ### Step-by-Step Collaboration Guide & Git Commands
 
 #### Step 1: Sync with the `dev` branch
-Always start from an up-to-date `dev` branch:
+Always start from an up-to-date `dev` branch using `--rebase`:
 
 ```bash
 # If you already cloned the repository:
 git fetch origin
 git checkout dev
-git pull origin dev
+git pull --rebase origin dev
 ```
 
 #### Step 2: Create your branch off `dev`
@@ -78,7 +78,7 @@ git checkout -b yourname/feat-short-description
    - After: `- [x] Move active pipes leftward by 1 column every N ticks.`
 3. Once all items in your ticket are finished, update the board status to `✅ Done (YourName)`.
 
-#### Step 4: Stage, commit, and push your branch
+#### Step 4: Stage & commit your changes
 ```bash
 # Check which files you modified
 git status
@@ -88,12 +88,31 @@ git add .
 
 # Commit following https://namingconvention.org/git/
 git commit -m "feat(scope): describe what you implemented"
-
-# Push your branch to GitHub
-git push -u origin yourname/feat-short-description
 ```
 
-#### Step 5: Open a Pull Request (PR) into `dev`
+#### Step 5: Rebase onto the latest `dev` before pushing
+To prevent unnecessary merge commits or accidentally overwriting a teammate's code that was merged into `dev` while you were working, **always rebase your branch onto `origin/dev` before pushing**:
+
+```bash
+# 1. Fetch the latest changes from GitHub
+git fetch origin
+
+# 2. Rebase your commits on top of the latest origin/dev
+git rebase origin/dev
+
+# If there are any conflicts:
+#   - Open the conflicting file(s) and keep both teammates' changes properly
+#   - Stage the resolved file(s): git add <filename>
+#   - Continue the rebase:        git rebase --continue
+#   - (Or cancel if needed):      git rebase --abort
+
+# 3. Push your branch to GitHub
+# (Use --force-with-lease if you already pushed this branch before rebasing)
+git push -u origin yourname/feat-short-description
+# git push --force-with-lease origin yourname/feat-short-description
+```
+
+#### Step 6: Open a Pull Request (PR) into `dev`
 1. Go to the GitHub repository in your browser.
 2. Click **Compare & pull request** on your pushed branch.
 3. Set the branches to:
