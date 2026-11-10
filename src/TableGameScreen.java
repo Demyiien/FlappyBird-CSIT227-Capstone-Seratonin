@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class TableGameScreen extends JFrame {
 
@@ -49,6 +50,7 @@ public class TableGameScreen extends JFrame {
         table1.setShowGrid(true);
         table1.setGridColor(Color.GRAY);
         table1.setTableHeader(null);
+        table1.setFocusable(false);
 
         // Make table and scrollPane transparent so the background shows through
         Color alphaZero = new Color(0, 0, 0, 0);
@@ -63,6 +65,7 @@ public class TableGameScreen extends JFrame {
 
         table1.setPreferredScrollableViewportSize(new Dimension(cols * cellSize, rows * cellSize));
 
+        panel1.setFocusable(true);
         panel1.add(table1, new GridBagConstraints());
 
         setTitle("Table Game Screen");
@@ -102,6 +105,22 @@ public class TableGameScreen extends JFrame {
                 return cell;
             }
         });
+
+        // Listen globally for SPACE, UP, or W key presses to make the bird fly
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                int code = e.getKeyCode();
+                if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                    bird.jump(table1);
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        // Start gravity so the bird falls 1 cell every 0.1 seconds
+        Gravity gravity = new Gravity(bird, table1, rows);
+        gravity.start();
     }
 
     public static void main(String[] args) {
