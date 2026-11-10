@@ -51,14 +51,14 @@ The development roadmap follows our agreed architectural design:
 | Ticket ID | Title | Module / Package | Priority | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done |
-| **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | 📝 Ready for Dev |
-| **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | 🚧 In Progress |
-| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | 📝 Ready for Dev |
-| **TICK-04** | Collision Detection & Game Flow Trigger | `controller` | High | 📝 Ready for Dev |
-| **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `view`, `model` | High | 📝 Ready for Dev |
-| **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 📝 Ready for Dev |
-| **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev |
-| **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 📝 Ready for Dev |
+| **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | 📝 Ready for Dev (Name) |
+| **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | 🚧 In Progress (Josh) |
+| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | 📝 Ready for Dev (Name) |
+| **TICK-04** | Collision Detection & Game Flow Trigger | `controller` | High | 📝 Ready for Dev (Name) |
+| **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `view`, `model` | High | 📝 Ready for Dev (Name) |
+| **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 📝 Ready for Dev (Name) |
+| **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
+| **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 📝 Ready for Dev (Name) |
 | **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 💡 Proposed |
 
 ---
