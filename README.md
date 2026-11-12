@@ -71,8 +71,8 @@ git checkout -b yourname/feat-short-description
 
 #### Step 3: Claim your ticket & update the checklist in `README.md`
 1. In the **Ticket Summary Board** below, replace `(Name)` with your name and change the status to `🚧 In Progress (YourName)`:
-   - Before: `| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | model, view | High | 📝 Ready for Dev (Name) |`
-   - After: `| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | model, view | High | 🚧 In Progress (Juan) |`
+   - Before: `| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | flapibirb.model, flapibirb.view | High | 📝 Ready for Dev (Name) |`
+   - After: `| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | flapibirb.model, flapibirb.view | High | 🚧 In Progress (Juan) |`
 2. As you finish items under your ticket's **Acceptance Criteria**, add an `x` inside `[ ]` to mark them done:
    - Before: `- [ ] Move active pipes leftward by 1 column every N ticks.`
    - After: `- [x] Move active pipes leftward by 1 column every N ticks.`
@@ -126,23 +126,23 @@ git push -u origin yourname/feat-short-description
 
 The development roadmap follows our agreed architectural design:
 1. **Modal Popup System:** A unified popup dialog for Start / Game Over containing player name input + bird selector on the left, and the live leaderboard on the right.
-2. **Modular OOP Architecture:** Clean separation across `model`, `view`, `controller`, `data`, and `exception` packages.
+2. **Modular OOP Architecture:** Clean separation across `flapibirb.model`, `flapibirb.view`, `flapibirb.controller`, `flapibirb.data`, and `flapibirb.exception` packages.
 3. **Pipe Sprite Slicing & Continuous Scrolling:** Slicing `pipe.png` into cell-sized icons and continuously scrolling pipes leftward.
-4. **Data Persistence:** Flat text file storage (`assets/data/leaderboard.txt`) using streams and custom exceptions.
+4. **Data Persistence:** Flat text file storage (`assets/flapibirb.data/leaderboard.txt`) using streams and custom exceptions.
 
 ### Ticket Summary Board
 
 | Ticket ID | Title | Module / Package | Priority | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done |
-| **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | 📝 Ready for Dev (Name) |
-| **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | 🚧 In Progress (Josh) |
-| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | 📝 Ready for Dev (Name) |
-| **TICK-04** | Collision Detection & Game Flow Trigger | `controller` | High | 📝 Ready for Dev (Name) |
-| **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `view`, `model` | High | 🚧 In Progress (Liyah) |
-| **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 📝 Ready for Dev (Name) |
-| **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
-| **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 📝 Ready for Dev (Name) |
+| **TICK-00** | Grid & Bird Renderer Baseline | `flapibirb.view` | High | ✅ Done |
+| **TICK-01** | Modular OOP Architecture Setup | `flapibirb.model`, `flapibirb.controller` | High | 📝 Ready for Dev (Name) |
+| **TICK-02** | Bird Physics & Jump Mechanics | `flapibirb.model`, `flapibirb.controller` | High | 🚧 In Progress (Josh) |
+| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `flapibirb.model`, `flapibirb.view` | High | 📝 Ready for Dev (Name) |
+| **TICK-04** | Collision Detection & Game Flow Trigger | `flapibirb.controller` | High | 📝 Ready for Dev (Name) |
+| **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `flapibirb.view`, `flapibirb.model` | High | 📝 Ready for Dev (Name) |
+| **TICK-06** | Leaderboard File Handling & Persistence | `flapibirb.data`, `flapibirb.model` | High | 📝 Ready for Dev (Name) |
+| **TICK-07** | Custom Exception Hierarchy & Input Defense | `flapibirb.exception` | High | 📝 Ready for Dev (Name) |
+| **TICK-08** | In-Game Scoreboard & HUD Integration | `flapibirb.view`, `flapibirb.controller` | Medium | 📝 Ready for Dev (Name) |
 | **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 💡 Proposed |
 
 ---
@@ -150,17 +150,17 @@ The development roadmap follows our agreed architectural design:
 ### Detailed Sprint Tickets
 
 #### TICK-01: Modular OOP Architecture Setup
-* **Package Target:** `flappybird.model`, `flappybird.view`, `flappybird.controller`, `flappybird.data`, `flappybird.exception`
+* **Package Target:** `flappybird.flapibirb.model`, `flappybird.flapibirb.view`, `flappybird.flapibirb.controller`, `flappybird.flapibirb.data`, `flappybird.flapibirb.exception`
 * **Description:** Refactor current standalone screen into modular classes so each responsibility is clean and testable.
 * **Acceptance Criteria:**
   - [ ] Package structure created under `src/`.
-  - [ ] `Bird` model created (holds coordinates, velocity, skin selection).
-  - [ ] `Pipe` model created (holds column position, gap bounds, passed state).
+  - [ ] `Bird` flapibirb.model created (holds coordinates, velocity, skin selection).
+  - [ ] `Pipe` flapibirb.model created (holds column position, gap bounds, passed state).
   - [ ] `GameEngine` or `GameController` created to manage game loop timer and tick updates.
-  - [ ] `TableGameScreen` acts as the primary View consuming model state.
+  - [ ] `TableGameScreen` acts as the primary View consuming flapibirb.model state.
 
 #### TICK-02: Bird Physics & Jump Mechanics
-* **Package Target:** `model.Bird`, `controller.GameController`
+* **Package Target:** `flapibirb.model.Bird`, `flapibirb.controller.GameController`
 * **Description:** Implement gravity, jump impulse, and key listeners on the bird.
 * **Acceptance Criteria:**
   - [x] Gravity updates the bird's vertical position every tick.
@@ -170,7 +170,7 @@ The development roadmap follows our agreed architectural design:
   - [x] Flight hang time negates gravity smoothly during jump ascent.
 
 #### TICK-03: Pipe Slicing, Spawning & Leftward Scrolling
-* **Package Target:** `model.Pipe`, `model.PipeManager`, `view.TableGameScreen`
+* **Package Target:** `flapibirb.model.Pipe`, `flapibirb.model.PipeManager`, `flapibirb.view.TableGameScreen`
 * **Description:** Slice `assets/images/pipe.png` into cell sub-images and move pipe columns to the left continuously.
 * **Acceptance Criteria:**
   - [x] Load and slice `pipe.png` into cell-sized `ImageIcon`s (top rim, bottom body).
@@ -179,7 +179,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] Automatically discard pipes that scroll past column `< 0`.
 
 #### TICK-04: Collision Detection & Game Over Trigger
-* **Package Target:** `controller.GameController`
+* **Package Target:** `flapibirb.controller.GameController`
 * **Description:** Detect when the 2x2 bird collides with any active pipe segment or floor boundary, then pause the loop and show the Game Over dialog.
 * **Acceptance Criteria:**
   - [ ] Exact collision check between the bird's 2x2 bounding box and pipe column cells.
@@ -187,7 +187,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] Instantly stops the timer on collision and triggers the unified popup in "Game Over" mode.
 
 #### TICK-05: Unified Start / Leaderboard / Bird Select Dialog
-* **Package Target:** `view.StartLeaderboardDialog`
+* **Package Target:** `flapibirb.view.StartLeaderboardDialog`
 * **Description:** A single pop-up dialog (`JDialog`) that opens automatically at game launch and on game over.
 * **Acceptance Criteria:**
   - [ ] **Left Side:**
@@ -199,28 +199,28 @@ The development roadmap follows our agreed architectural design:
   - [ ] Modal blocks gameplay until player enters a valid name and clicks "Start".
 
 #### TICK-06: Leaderboard File Handling & Persistence
-* **Package Target:** `data.LeaderboardManager`, `model.ScoreEntry`
-* **Description:** Save and load high scores to a local file (`assets/data/leaderboard.txt`).
+* **Package Target:** `flapibirb.data.LeaderboardManager`, `flapibirb.model.ScoreEntry`
+* **Description:** Save and load high scores to a local file (`assets/flapibirb.data/leaderboard.txt`).
 * **Acceptance Criteria:**
   - [ ] Flat text format: `playerName,score,birdType,date`.
   - [ ] Reads file on startup using `BufferedReader` and populates the leaderboard table.
   - [ ] Appends new scores upon Game Over using `BufferedWriter`.
   - [ ] Sorts scores in descending order (`ScoreEntry` implements `Comparable<ScoreEntry>`).
-  - [ ] Auto-creates the data directory and file if it does not exist yet.
+  - [ ] Auto-creates the flapibirb.data directory and file if it does not exist yet.
 
 #### TICK-07: Custom Exception Hierarchy & Input Defense
-* **Package Target:** `exception.*`
-* **Description:** OOP custom exception classes to handle invalid inputs, corrupted data, and missing files gracefully.
+* **Package Target:** `flapibirb.exception.*`
+* **Description:** OOP custom flapibirb.exception classes to handle invalid inputs, corrupted flapibirb.data, and missing files gracefully.
 * **Acceptance Criteria:**
-  - [ ] `GameException` (base custom checked/unchecked exception).
+  - [ ] `GameException` (base custom checked/unchecked flapibirb.exception).
   - [ ] `InvalidPlayerNameException` (thrown if name is empty, too short, or has invalid characters).
-  - [ ] `LeaderboardDataException` (thrown if a line in the data file cannot be parsed).
+  - [ ] `LeaderboardDataException` (thrown if a line in the flapibirb.data file cannot be parsed).
   - [ ] `AssetNotFoundException` (thrown if sprites or background images fail to load).
   - [ ] All file streams enclosed in `try-with-resources`.
   - [ ] User-friendly error messages presented via `JOptionPane`.
 
 #### TICK-08: In-Game Scoreboard & HUD Integration
-* **Package Target:** `view.TableGameScreen`
+* **Package Target:** `flapibirb.view.TableGameScreen`
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
   - [ ] Point scored when a pipe safely clears the bird's horizontal columns.
