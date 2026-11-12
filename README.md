@@ -140,7 +140,7 @@ The development roadmap follows our agreed architectural design:
 | **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | 📝 Ready for Dev (Name) |
 | **TICK-04** | Collision Detection & Game Flow Trigger | `controller` | High | 📝 Ready for Dev (Name) |
 | **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `view`, `model` | High | 🚧 In Progress (Liyah) |
-| **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 📝 Ready for Dev (Name) |
+| **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 🚧 In Progress (Liyah) ) |
 | **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
 | **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 📝 Ready for Dev (Name) |
 | **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 💡 Proposed |
