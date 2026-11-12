@@ -11,7 +11,7 @@ Make sure you have the following installed and configured before working on the 
 - **Java Development Kit (JDK 21):** Required to compile and run the project.
 - **Java Swing & AWT:** Built into the JDK (used for `JFrame`, `JTable`, `JPanel`, and custom rendering).
 - **IntelliJ IDEA (Community or Ultimate):**
-  - Ensure the bundled **UI Designer** plugin is enabled (for `.form` files like `TableGameScreen.form`).
+  - Ensure the bundled **UI Designer** plugin is enabled (for `.form` files like `Game.form`).
   - Set **Project SDK** and **Project Language Level** to **21** (`File > Project Structure > Project`).
 - **Git:** Installed and authenticated with your GitHub account.
 
@@ -20,7 +20,7 @@ Make sure you have the following installed and configured before working on the 
 ## 🚀 How to Run
 
 1. Open the project folder in **IntelliJ IDEA** (JDK 21).
-2. Open [`src/TableGameScreen.java`](src/TableGameScreen.java) and run `TableGameScreen.main()`.
+2. Open [`src/Game.java`](src/TableGameScreen.java) and run `Game.main()`.
 
 ---
 
@@ -157,20 +157,20 @@ The development roadmap follows our agreed architectural design:
   - [ ] `Bird` model created (holds coordinates, velocity, skin selection).
   - [ ] `Pipe` model created (holds column position, gap bounds, passed state).
   - [ ] `GameEngine` or `GameController` created to manage game loop timer and tick updates.
-  - [ ] `TableGameScreen` acts as the primary View consuming model state.
+  - [ ] `Game` acts as the primary View consuming model state.
 
 #### TICK-02: Bird Physics & Jump Mechanics
 * **Package Target:** `model.Bird`, `controller.GameController`
-* **Description:** Implement gravity, jump impulse, and key listeners on the bird.
+* **Description:** Implement gameTime, jump impulse, and key listeners on the bird.
 * **Acceptance Criteria:**
-  - [x] Gravity updates the bird's vertical position every tick.
+  - [x] GameTime updates the bird's vertical position every tick.
   - [x] Pressing `SPACE`, `UP`, or `W` triggers upward movement.
-  - [ ] Start trigger: Negate / pause gravity until player initiates first jump.
+  - [ ] Start trigger: Negate / pause gameTime until player initiates first jump.
   - [x] Clamp row bounds so the bird cannot fly above row `0` or drop below floor bounds.
-  - [x] Flight hang time negates gravity smoothly during jump ascent.
+  - [x] Flight hang time negates gameTime smoothly during jump ascent.
 
 #### TICK-03: Pipe Slicing, Spawning & Leftward Scrolling
-* **Package Target:** `model.Pipe`, `model.PipeManager`, `view.TableGameScreen`
+* **Package Target:** `model.Pipe`, `model.PipeManager`, `view.Game`
 * **Description:** Slice `assets/images/pipe.png` into cell sub-images and move pipe columns to the left continuously.
 * **Acceptance Criteria:**
   - [x] Load and slice `pipe.png` into cell-sized `ImageIcon`s (top rim, bottom body).
@@ -220,7 +220,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] User-friendly error messages presented via `JOptionPane`.
 
 #### TICK-08: In-Game Scoreboard & HUD Integration
-* **Package Target:** `view.TableGameScreen`
+* **Package Target:** `view.Game`
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
   - [ ] Point scored when a pipe safely clears the bird's horizontal columns.

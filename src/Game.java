@@ -2,19 +2,30 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
-public class TableGameScreen extends JFrame {
+public class Game extends JFrame {
 
-    private JTable table1;
-    private JPanel panel1;
-    private JScrollPane scrollPane;
+    private JTable gameTable;
+    private JPanel mainPanel;
+    private JScrollPane mainScrollPane;
 
-    public TableGameScreen() {
+    private final int rows = 32;
+    private final int cols = 64;
+    private final int cellSize = 24;
+    private Bird bird;
+    private ArrayList<Pipe> pipes = new ArrayList<Pipe>();
+    private int cameraX;
+
+    private GameTime gameTime;
+
+
+    public Game() {
 
         // Load and draw the background image on the main panel
         Image backgroundImage = new ImageIcon("assets/images/background.jpg").getImage();
 
-        panel1 = new JPanel(new GridBagLayout()) {
+        mainPanel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -25,56 +36,56 @@ public class TableGameScreen extends JFrame {
         };
 
         // 32x64 grid with 24px cells (total size is 1536x768)
-        int rows = 32;
-        int cols = 64;
-        int cellSize = 24;
+
 
         DefaultTableModel model = new DefaultTableModel(rows, cols);
 
         // Initialize the bird and pipe objects
-        Bird bird = new Bird(14, 8, cellSize);
         Pipe pipe = new Pipe(36, rows, cellSize);
 
-        table1 = new JTable(model);
+        bird = new Bird(14, 8, cellSize);
+        pipes.add(new Pipe(36, rows, cellSize));
+        gameTable = new JTable(model);
+        gameTime = new GameTime(this);
 
-        table1.setRowHeight(cellSize);
+        gameTable.setRowHeight(cellSize);
 
         for (int i = 0; i < cols; i++) {
-            table1.getColumnModel().getColumn(i).setPreferredWidth(cellSize);
-            table1.getColumnModel().getColumn(i).setMinWidth(cellSize);
-            table1.getColumnModel().getColumn(i).setMaxWidth(cellSize);
+            gameTable.getColumnModel().getColumn(i).setPreferredWidth(cellSize);
+            gameTable.getColumnModel().getColumn(i).setMinWidth(cellSize);
+            gameTable.getColumnModel().getColumn(i).setMaxWidth(cellSize);
         }
 
-        table1.setIntercellSpacing(new Dimension(0, 0));
-        table1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table1.setShowGrid(true);
-        table1.setGridColor(Color.GRAY);
-        table1.setTableHeader(null);
-        table1.setFocusable(false);
+        gameTable.setIntercellSpacing(new Dimension(0, 0));
+        gameTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        gameTable.setShowGrid(true);
+        gameTable.setGridColor(Color.GRAY);
+        gameTable.setTableHeader(null);
+        gameTable.setFocusable(false);
 
-        // Make table and scrollPane transparent so the background shows through
+        // Make table and mainScrollPane transparent so the background shows through
         Color alphaZero = new Color(0, 0, 0, 0);
-        table1.setOpaque(false);
-        table1.setBackground(alphaZero);
+        gameTable.setOpaque(false);
+        gameTable.setBackground(alphaZero);
 
-        if (scrollPane != null) {
-            scrollPane.setOpaque(false);
-            scrollPane.getViewport().setOpaque(false);
-            scrollPane.getViewport().setBackground(alphaZero);
+        if (mainScrollPane != null) {
+            mainScrollPane.setOpaque(false);
+            mainScrollPane.getViewport().setOpaque(false);
+            mainScrollPane.getViewport().setBackground(alphaZero);
         }
 
-        table1.setPreferredScrollableViewportSize(new Dimension(cols * cellSize, rows * cellSize));
+        gameTable.setPreferredScrollableViewportSize(new Dimension(cols * cellSize, rows * cellSize));
 
-        panel1.setFocusable(true);
-        panel1.add(table1, new GridBagConstraints());
+        mainPanel.setFocusable(true);
+        mainPanel.add(gameTable, new GridBagConstraints());
 
-        setTitle("Table Game Screen");
-        setContentPane(panel1);
+        setTitle("Flappy Birb");
+        setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
 
-        table1.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+        gameTable.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
 
             @Override
             public Component getTableCellRendererComponent(
@@ -111,7 +122,7 @@ public class TableGameScreen extends JFrame {
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 int code = e.getKeyCode();
                 if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
-                    bird.jump(table1);
+                    bird.jump(gameTable);
                     return true;
                 }
             }
@@ -119,16 +130,30 @@ public class TableGameScreen extends JFrame {
         });
 
         // Start gravity so the bird falls 1 cell every 0.1 seconds
-        Gravity gravity = new Gravity(bird, table1, rows);
-        gravity.start();
+        gameTime.start();
+    }
+
+    public JTable getGameTable() {
+        return gameTable;
+    }
+
+    public Bird getBird() {
+        return bird;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
-            TableGameScreen screen = new TableGameScreen();
+            Game screen = new Game();
             screen.setVisible(true);
         });
-
     }
 }
