@@ -96,15 +96,20 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         startPnl.setBorder(new javax.swing.border.AbstractBorder() {
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+                // temporary Graphics2D copy so our settings (color/stroke) don't bleed into other UI elements
                 Graphics2D g2 = (Graphics2D) g.create();
+                // enable Anti-Aliasing to smooth out pixelated edges on the rounded corners
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-
-                g2.setColor(new Color(56,113,225)); // Your blue color
+                // fill rounded bg
+                g2.setColor(new Color(56,113,225));
                 g2.fillRoundRect(0, 0, w - 1, h - 1, 20, 20);
 
+                // draw border line
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRoundRect(1, 1, w - 2, h - 2, 20, 20);
+
+                // release system graphics resources immediately after drawing
                 g2.dispose();
 
             }
