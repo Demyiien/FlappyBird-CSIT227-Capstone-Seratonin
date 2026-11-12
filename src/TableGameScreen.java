@@ -106,12 +106,15 @@ public class TableGameScreen extends JFrame {
             }
         });
 
-        // Listen globally for SPACE, UP, or W key presses to make the bird fly
+        // Listen globally for SPACE, UP, or W key presses and releases (prevents holding to spam jump)
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-            if (e.getID() == KeyEvent.KEY_PRESSED) {
-                int code = e.getKeyCode();
-                if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+            int code = e.getKeyCode();
+            if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                if (e.getID() == KeyEvent.KEY_PRESSED) {
                     bird.jump(table1);
+                    return true;
+                } else if (e.getID() == KeyEvent.KEY_RELEASED) {
+                    bird.releaseJump();
                     return true;
                 }
             }
