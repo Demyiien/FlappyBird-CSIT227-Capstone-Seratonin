@@ -12,6 +12,7 @@ public class Bird {
     private final int extraHangMs = 60;  // extra ms to negate gravity after flying up
 
     private boolean flying = false;
+    private boolean canJump = true; // prevents holding the jump key to spam jump
     private Timer flightTimer;
     private Timer hangTimer;
 
@@ -44,6 +45,11 @@ public class Bird {
 
     // Fly upward cell-by-cell and negate gravity during flight plus extra hang time
     public void jump(JTable table) {
+        if (!canJump) {
+            return;
+        }
+        canJump = false;
+
         if (flightTimer != null && flightTimer.isRunning()) {
             flightTimer.stop();
         }
@@ -83,6 +89,11 @@ public class Bird {
 
     public boolean isFlying() {
         return flying;
+    }
+
+    // Re-enable jumping only after the player releases the jump key
+    public void releaseJump() {
+        canJump = true;
     }
 
     // Returns the matching quadrant icon if the given cell is part of the 2x2 bird
