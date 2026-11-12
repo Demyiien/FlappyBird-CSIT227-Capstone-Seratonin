@@ -8,7 +8,7 @@ A cell-based Flappy Bird game built with **Java Swing** and `JTable` for the CSI
 - Dominic Rhowel Embate
 - Josh Damien Diamola
 - Thomas Jacob Dañas
-- Trinity Zhian Kintanar
+- Zhian Trinity Kintanar
 
 ## Capstone Project
 
