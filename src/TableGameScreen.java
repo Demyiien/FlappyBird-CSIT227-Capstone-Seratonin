@@ -106,11 +106,17 @@ public class TableGameScreen extends JFrame {
             }
         });
 
+        // Initialize gravity, but wait for the first key press before starting it
+        Gravity gravity = new Gravity(bird, table1, rows);
+
         // Listen globally for SPACE, UP, or W key presses and releases (prevents holding to spam jump)
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
             int code = e.getKeyCode();
             if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
                 if (e.getID() == KeyEvent.KEY_PRESSED) {
+                    if (!gravity.isRunning()) {
+                        gravity.start();
+                    }
                     bird.jump(table1);
                     return true;
                 } else if (e.getID() == KeyEvent.KEY_RELEASED) {
@@ -120,10 +126,6 @@ public class TableGameScreen extends JFrame {
             }
             return false;
         });
-
-        // Start gravity so the bird falls 1 cell every 0.1 seconds
-        Gravity gravity = new Gravity(bird, table1, rows);
-        gravity.start();
     }
 
     public static void main(String[] args) {

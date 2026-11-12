@@ -19,7 +19,13 @@ public class Gravity {
     }
 
     public void start() {
-        timer.start();
+        if (!timer.isRunning()) {
+            timer.start();
+        }
+    }
+
+    public boolean isRunning() {
+        return timer.isRunning();
     }
 
     public void stop() {
