@@ -1,11 +1,7 @@
-package flapibirb.view;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
-import flapibirb.controller.*;
-import flapibirb.model.*;
 
 public class TableGameScreen extends JFrame {
 
