@@ -120,6 +120,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <font name="JetBrains Mono ExtraLight" size="18" style="1"/>
               <text value="Leaderboard"/>
             </properties>
           </component>
@@ -130,7 +131,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="2d232" class="javax.swing.JTable" binding="lbLabel">
+              <component id="2d232" class="javax.swing.JTable" binding="leaderboardTbl">
                 <constraints/>
                 <properties/>
               </component>

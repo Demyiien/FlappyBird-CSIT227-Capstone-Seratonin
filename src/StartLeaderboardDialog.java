@@ -2,9 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.URL;
-import javax.imageio.ImageIO;
+import javax.imageio.*;
+import javax.swing.table.DefaultTableModel;
+import java.io.*;
 
 public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
@@ -21,7 +22,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
     private JLabel nameLabel;
     private JLabel birbChoiceLabel;
     private JLabel leaderboardLabel;
-    private JTable lbLabel;
+    private JTable leaderboardTbl;
 
     // pnlMain bg fields
     private final URL imgUrl = getClass().getResource("/blueBG.jpg");
@@ -41,52 +42,131 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         birbGroup.add(birb5rb);
 
         // changing birb1 icon to photo:
-        // load the image
-        ImageIcon originalbirb1Icon = new ImageIcon(getClass().getResource("/flappy-icon.png"));
+        try {
+            // load & resize the UNSELECTED image
+            URL url1 = getClass().getResource("/flappy-icon.png");
+            if (url1 == null) {
+                throw new FileNotFoundException("flappy-icon.png not found");
+            }
+            ImageIcon originalbirb1Icon = new ImageIcon(url1);
+            Image scaledImage1 = originalbirb1Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb1rb.setIcon(new ImageIcon(scaledImage1));
 
-        // resize image
-        Image scaledImage1 = originalbirb1Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        ImageIcon birb1Icon = new ImageIcon(scaledImage1);
-
-        // liyah unsure pt. 1: what happens when a birb is selected? i dono so comment ka muna makalimot nya ko syntax
-        // ImageIcon birb1Selected = new ImageIcon(getClass().getResource("/birb1_selected.png"));
-
-        // apply icons and remove default radio button graphics
-        birb1rb.setIcon(birb1Icon);
-        // liyah unsure pt. 2: still dono what to put here
-        // birb1rb.setSelectedIcon(birb1Selected);
-        birb1rb.setText("");                      // remove default label text
-        birb1rb.setOpaque(false);                 // remove background box
+            // load & resize the SELECTED image
+            URL selectedUrl1 = getClass().getResource("/liyahBird.png");
+            if (selectedUrl1 == null) {
+                throw new FileNotFoundException("liyahBird.png not found");
+            }
+            ImageIcon originalSelected1 = new ImageIcon(selectedUrl1);
+            Image scaledSelected1 = originalSelected1.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb1rb.setSelectedIcon(new ImageIcon(scaledSelected1));
+        } catch (Exception e) {
+            System.err.println("Error loading birb1: " + e.getMessage());
+        }
+        birb1rb.setText("");
+        birb1rb.setOpaque(false);
 
         // changing birb2 icon to photo:
-        ImageIcon originalbirb2Icon = new ImageIcon(getClass().getResource("/liyahBird.png"));
-        Image scaledImage2 = originalbirb2Icon.getImage().getScaledInstance(40, 40  , Image.SCALE_SMOOTH);
-        ImageIcon birb2Icon = new ImageIcon(scaledImage2);
-        birb2rb.setIcon(birb2Icon);
+        try {
+            // load & resize the UNSELECTED image
+            URL url2 = getClass().getResource("/flappy-icon.png");
+            if (url2 == null) {
+                throw new FileNotFoundException("flappy-icon.png not found");
+            }
+            ImageIcon originalbirb2Icon = new ImageIcon(url2);
+            Image scaledImage2 = originalbirb2Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb2rb.setIcon(new ImageIcon(scaledImage2));
+
+            // load & resize the SELECTED image
+            URL selectedUrl2 = getClass().getResource("/liyahBird.png");
+            if (selectedUrl2 == null) {
+                throw new FileNotFoundException("liyahBird.png not found");
+            }
+            ImageIcon originalSelected2 = new ImageIcon(selectedUrl2);
+            Image scaledSelected2 = originalSelected2.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb2rb.setSelectedIcon(new ImageIcon(scaledSelected2));
+
+        } catch (Exception e) {
+            System.err.println("Error loading birb2: " + e.getMessage());
+        }
         birb2rb.setText("");
         birb2rb.setOpaque(false);
 
         // changing birb3 icon to photo:
-        ImageIcon originalbirb3Icon = new ImageIcon(getClass().getResource("/tjParrot.png"));
-        Image scaledImage3 = originalbirb3Icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-        ImageIcon birb3Icon = new ImageIcon(scaledImage3);
-        birb3rb.setIcon(birb3Icon);
+        try {
+            // load & resize the UNSELECTED image
+            URL url3 = getClass().getResource("/flappy-icon.png");
+            if (url3 == null) {
+                throw new FileNotFoundException("flappy-icon.png not found");
+            }
+            ImageIcon originalbirb3Icon = new ImageIcon(url3);
+            Image scaledImage3 = originalbirb3Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb3rb.setIcon(new ImageIcon(scaledImage3));
+
+            // load & resize the SELECTED image
+            URL selectedUrl3 = getClass().getResource("/liyahBird.png");
+            if (selectedUrl3 == null) {
+                throw new FileNotFoundException("liyahBird.png not found");
+            }
+            ImageIcon originalSelected3 = new ImageIcon(selectedUrl3);
+            Image scaledSelected3 = originalSelected3.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb3rb.setSelectedIcon(new ImageIcon(scaledSelected3));
+
+        } catch (Exception e) {
+            System.err.println("Error loading birb3: " + e.getMessage());
+        }
         birb3rb.setText("");
         birb3rb.setOpaque(false);
 
         // changing birb4 icon to photo:
-        ImageIcon originalbirb4Icon = new ImageIcon(getClass().getResource("/flappy-icon.png"));
-        Image scaledImage4 = originalbirb4Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        ImageIcon birb4Icon = new ImageIcon(scaledImage4);
-        birb4rb.setIcon(birb4Icon);
+        try {
+            // load & resize the UNSELECTED image
+            URL url4 = getClass().getResource("/flappy-icon.png");
+            if (url4 == null) {
+                throw new FileNotFoundException("flappy-icon.png not found");
+            }
+            ImageIcon originalbirb4Icon = new ImageIcon(url4);
+            Image scaledImage4 = originalbirb4Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb4rb.setIcon(new ImageIcon(scaledImage4));
+
+            // load & resize the SELECTED image
+            URL selectedUrl4 = getClass().getResource("/liyahBird.png");
+            if (selectedUrl4 == null) {
+                throw new FileNotFoundException("liyahBird.png not found");
+            }
+            ImageIcon originalSelected4 = new ImageIcon(selectedUrl4);
+            Image scaledSelected4 = originalSelected4.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb4rb.setSelectedIcon(new ImageIcon(scaledSelected4));
+
+        } catch (Exception e) {
+            System.err.println("Error loading birb4: " + e.getMessage());
+        }
         birb4rb.setText("");
         birb4rb.setOpaque(false);
 
         // changing birb5 icon to photo:
-        ImageIcon originalbirb5Icon = new ImageIcon(getClass().getResource("/flappy-icon.png"));
-        Image scaledImage5 = originalbirb4Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        ImageIcon birb5Icon = new ImageIcon(scaledImage5);
-        birb5rb.setIcon(birb5Icon);
+        try {
+            // load & resize the UNSELECTED image
+            URL url5 = getClass().getResource("/flappy-icon.png");
+            if (url5 == null) {
+                throw new FileNotFoundException("flappy-icon.png not found");
+            }
+            ImageIcon originalbirb5Icon = new ImageIcon(url5);
+            Image scaledImage5 = originalbirb5Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb5rb.setIcon(new ImageIcon(scaledImage5));
+
+            // load & resize the SELECTED image
+            URL selectedUrl5 = getClass().getResource("/liyahBird.png");
+            if (selectedUrl5 == null) {
+                throw new FileNotFoundException("liyahBird.png not found");
+            }
+            ImageIcon originalSelected5 = new ImageIcon(selectedUrl5);
+            Image scaledSelected5 = originalSelected5.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            birb5rb.setSelectedIcon(new ImageIcon(scaledSelected5));
+
+        } catch (Exception e) {
+            System.err.println("Error loading birb5: " + e.getMessage());
+        }
         birb5rb.setText("");
         birb5rb.setOpaque(false);
 
@@ -105,7 +185,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
                 g2.setColor(new Color(56,113,225));
                 g2.fillRoundRect(0, 0, w - 1, h - 1, 20, 20);
 
-                // draw border line
+                // draw border
                 g2.setStroke(new BasicStroke(2));
                 g2.drawRoundRect(1, 1, w - 2, h - 2, 20, 20);
 
@@ -122,6 +202,53 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         });
 
 
+        // round borders for leaderboard
+        leaderboardPnl.setOpaque(false);
+        leaderboardPnl.setBorder(new javax.swing.border.AbstractBorder() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2.setColor(new Color(56,113,225));
+                g2.fillRoundRect(0, 0, w - 1, h - 1, 20, 20);
+
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(1, 1, w - 2, h - 2, 20, 20);
+
+                g2.dispose();
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return new Insets(10, 10, 10, 10);
+            }
+
+        });
+
+        // edit playButton label
+        playButton.setFont(new Font("JetBrains Mono ExtraLight", Font.BOLD, 18));
+
+        // leaderboard table stuff
+        DefaultTableModel model = (DefaultTableModel) leaderboardTbl.getModel();
+        model.addColumn("Rank");
+        model.addColumn("Name");
+        model.addColumn("Score");
+        model.addColumn("Birb");
+
+        // placeholder top 10 (wala pay file handling hehe)
+        model.addRow(new Object[]{1, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{2, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{3, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{4, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{5, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{6, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{7, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{8, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{9, "Alliyah", 20, "JustinBiBirb"});
+        model.addRow(new Object[]{10, "Alliyah", 20, "JustinBiBirb"});
+
+
 
 
 
@@ -135,12 +262,24 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         nameLabel.setName("nameLabel");
         birbChoiceLabel.setName("birbChoiceLabel");
         leaderboardLabel.setName("leaderboardLabel");
-        lbLabel.setName("lbLabel");
+        leaderboardTbl.setName("leaderboardTbl");
 
         playButton.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+
+        if (source == playButton) {
+            String playerName = tfName.getText();
+
+            if (playerName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter your name!", "Missing Name", JOptionPane.WARNING_MESSAGE);
+                tfName.requestFocus();
+                return;
+            }
+            dispose();
+        }
 
 
     }
