@@ -1,4 +1,6 @@
+package flapibirb.controller;
 import javax.swing.*;
+import flapibirb.model.*;
 
 public class Gravity {
 
