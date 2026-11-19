@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
-public class Pipe {
+public class Pipe implements GObject {
 
     private int col;
     private final int pipeCols = 3; // pipe is 3 cells wide
@@ -105,4 +105,8 @@ public class Pipe {
         this.col = col;
     }
 
+    @Override
+    public void die() {
+
+    }
 }

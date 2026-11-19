@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Bird {
 
@@ -8,7 +9,7 @@ public class Bird {
     private int col;
 
     private final int jumpCells = 3;      // cells moved up per jump
-    private final int flightStepMs = 50;  // ms per upward cell movement
+    private final int flightStepMs = 25;  // ms per upward cell movement
     private final int extraHangMs = 60;  // extra ms to negate gravity after flying up
 
     private boolean flying = false;
@@ -45,6 +46,7 @@ public class Bird {
 
     // Fly upward cell-by-cell and negate gravity during flight plus extra hang time
     public void jump(JTable table) {
+        // setRow(getRow() - 5);
         if (!canJump) {
             return;
         }
@@ -59,19 +61,11 @@ public class Bird {
 
         flying = true;
 
-        // Move up 1 cell right away on key press
-        if (row > 0) {
-            row--;
-            table.repaint();
-        }
-
-        final int[] remainingSteps = {jumpCells - 1};
-
+        AtomicInteger remainingSteps = new AtomicInteger(jumpCells - 1);
+//
         flightTimer = new Timer(flightStepMs, e -> {
-            if (remainingSteps[0] > 0 && row > 0) {
-                row--;
-                remainingSteps[0]--;
-                table.repaint();
+            if (remainingSteps.get() > 0 && row > 0) {
+                remainingSteps.getAndDecrement();
             } else {
                 ((Timer) e.getSource()).stop();
 
@@ -79,6 +73,7 @@ public class Bird {
                 int negateDuration = (jumpCells * flightStepMs) + extraHangMs;
                 hangTimer = new Timer(negateDuration, evt -> {
                     flying = false;
+                    canJump = true;
                 });
                 hangTimer.setRepeats(false);
                 hangTimer.start();

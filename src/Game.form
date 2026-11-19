@@ -22,7 +22,11 @@
         <children>
           <component id="5e712" class="javax.swing.JTable" binding="gameTable">
             <constraints/>
-            <properties/>
+            <properties>
+              <enabled value="false"/>
+              <showHorizontalLines value="true"/>
+              <showVerticalLines value="true"/>
+            </properties>
           </component>
         </children>
       </scrollpane>
