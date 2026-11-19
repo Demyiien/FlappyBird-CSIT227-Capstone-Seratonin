@@ -1,7 +1,11 @@
+package flapibirb.view;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import flapibirb.controller.*;
+import flapibirb.model.*;
 
 public class TableGameScreen extends JFrame {
 
@@ -31,8 +35,8 @@ public class TableGameScreen extends JFrame {
 
         DefaultTableModel model = new DefaultTableModel(rows, cols);
 
-        // Initialize the bird (using Point(x=col, y=row)) and pipe objects
-        Bird bird = new CoolBird("Player", new Point(8, 14), cellSize);
+        // Initialize the bird (using flapibirb.model.Point(x=col, y=row)) and pipe objects
+        Bird bird = new CoolBird("Player", new flapibirb.model.Point(8, 14), cellSize);
         Pipe pipe = new Pipe(36, rows, cellSize);
 
         table1 = new JTable(model);
@@ -92,8 +96,8 @@ public class TableGameScreen extends JFrame {
                 cell.setText("");
                 cell.setIcon(null);
 
-                // Check if the current cell Point(x=column, y=row) belongs to the bird or the pipe
-                ImageIcon birdIcon = bird.getIconAt(new Point(column, row));
+                // Check if the current cell flapibirb.model.Point(x=column, y=row) belongs to the bird or the pipe
+                ImageIcon birdIcon = bird.getIconAt(new flapibirb.model.Point(column, row));
                 if (birdIcon != null) {
                     cell.setIcon(birdIcon);
                 } else {

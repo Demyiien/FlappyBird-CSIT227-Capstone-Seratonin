@@ -1,13 +1,18 @@
+package flapibirb.view;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+<<<<<<< HEAD:src/StartLeaderboardDialog.java
 import javax.imageio.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+=======
+>>>>>>> cb31fbcc550ce517741d96dfa14e23181c2989f8:src/flapibirb/view/StartLeaderboardDialog.java
 
 public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
