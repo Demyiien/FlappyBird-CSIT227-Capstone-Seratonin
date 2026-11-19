@@ -3,6 +3,7 @@ package flapibirb.model;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import flapibirb.controller.*;
 
 public abstract class Bird implements GObject {
 
@@ -57,7 +58,7 @@ public abstract class Bird implements GObject {
         lowerRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, cellSize, cellSize, cellSize));
     }
 
-    // Fly upward cell-by-cell using Point coordinates and negate gravity during flight
+    // Fly upward cell-by-cell using flapibirb.model.Point coordinates and negate gravity during flight
     public void jump() {
         if (!isAlive || !canJump) {
             return;
@@ -138,7 +139,7 @@ public abstract class Bird implements GObject {
         canJump = true;
     }
 
-    // Returns the matching quadrant icon if the given cell Point is part of the 2x2 bird
+    // Returns the matching quadrant icon if the given cell flapibirb.model.Point is part of the 2x2 bird
     public ImageIcon getIconAt(Point cellPos) {
         return getIconAt((int) cellPos.y, (int) cellPos.x);
     }

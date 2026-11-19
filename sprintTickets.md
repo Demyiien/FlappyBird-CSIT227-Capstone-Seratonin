@@ -99,7 +99,7 @@ The development roadmap follows our agreed architectural design:
 * **Package Target:** `flapibirb.view`
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
-  - [ ] Point scored when a pipe safely clears the bird's horizontal columns.
+  - [ ] flapibirb.model.Point scored when a pipe safely clears the bird's horizontal columns.
   - [ ] Retro-style score display overlay at top-center.
 
 #### TICK-09: Sound Effects & Audio Manager (Optional)
@@ -107,5 +107,5 @@ The development roadmap follows our agreed architectural design:
 * **Description:** Background music and sound effects for jumps, score increments, and collisions.
 * **Acceptance Criteria:**
   - [ ] Jump wing flap sound.
-  - [ ] Point score sound.
+  - [ ] flapibirb.model.Point score sound.
   - [ ] Collision / hit sound.
