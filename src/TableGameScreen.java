@@ -4,6 +4,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class TableGameScreen extends JFrame {
 
@@ -20,6 +23,21 @@ public class TableGameScreen extends JFrame {
 
         // Load and draw the background image on the main panel
         Image backgroundImage = new ImageIcon("assets/images/background.jpg").getImage();
+
+        try {
+            File font = new File("assets/images/NumberFont.ttf");
+
+
+            if (font != null) {
+                Font numberFont = Font.createFont(Font.TRUETYPE_FONT, font);
+
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(numberFont);
+            }
+
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+        }
 
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
@@ -44,7 +62,7 @@ public class TableGameScreen extends JFrame {
 
                 // TEST-----------
                 g.setColor(Color.BLACK);
-                g.setFont(new Font("Arial", Font.BOLD, 72));
+                g.setFont(new Font("Flappy Bird", Font.PLAIN , 82));
                 g.drawString(scoreText, 1000, 100);
 
             }
@@ -156,6 +174,8 @@ public class TableGameScreen extends JFrame {
     }
 
     public static void main(String[] args) {
+
+
 
         SwingUtilities.invokeLater(() -> {
             TableGameScreen screen = new TableGameScreen();
