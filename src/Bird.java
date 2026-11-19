@@ -2,28 +2,40 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Bird {
+public abstract class Bird implements GObject {
 
-    private int row;
-    private int col;
+    private Point pos;
+    private String name;
+    private int score;
+    private boolean isAlive;
+    private double velocity;
+    private double gravity;
 
-    private final int jumpCells = 3;      // cells moved up per jump
-    private final int flightStepMs = 50;  // ms per upward cell movement
+    private final int flightStepMs = 50; // ms per upward cell movement
     private final int extraHangMs = 60;  // extra ms to negate gravity after flying up
 
     private boolean flying = false;
     private boolean canJump = true; // prevents holding the jump key to spam jump
     private Timer flightTimer;
     private Timer hangTimer;
+    private JTable table;
 
     private final ImageIcon upperLeftIcon;
     private final ImageIcon upperRightIcon;
     private final ImageIcon lowerLeftIcon;
     private final ImageIcon lowerRightIcon;
 
-    public Bird(int startRow, int startCol, int cellSize) {
-        this.row = startRow;
-        this.col = startCol;
+    public Bird(String name) {
+        this(name, new Point(8, 14), 24);
+    }
+
+    public Bird(String name, Point startPos, int cellSize) {
+        this.name = name;
+        this.pos = new Point(startPos.x, startPos.y);
+        this.score = 0;
+        this.isAlive = true;
+        this.velocity = 3.0; // cells moved up per jump
+        this.gravity = 1.0;  // cells moved down per gravity tick
 
         // Scale the bird to fit a 2x2 cell area (48x48 px)
         int birdWidth = 2 * cellSize;
@@ -43,9 +55,9 @@ public class Bird {
         lowerRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, cellSize, cellSize, cellSize));
     }
 
-    // Fly upward cell-by-cell and negate gravity during flight plus extra hang time
-    public void jump(JTable table) {
-        if (!canJump) {
+    // Fly upward cell-by-cell using Point coordinates and negate gravity during flight
+    public void jump() {
+        if (!isAlive || !canJump) {
             return;
         }
         canJump = false;
@@ -58,20 +70,21 @@ public class Bird {
         }
 
         flying = true;
+        int jumpCells = (int) Math.round(velocity);
 
         // Move up 1 cell right away on key press
-        if (row > 0) {
-            row--;
-            table.repaint();
+        if (pos.y > 0) {
+            setPos(new Point(pos.x, pos.y - 1));
+            repaintTable();
         }
 
-        final int[] remainingSteps = {jumpCells - 1};
+        final int[] remainingSteps = {Math.max(0, jumpCells - 1)};
 
         flightTimer = new Timer(flightStepMs, e -> {
-            if (remainingSteps[0] > 0 && row > 0) {
-                row--;
+            if (isAlive && remainingSteps[0] > 0 && pos.y > 0) {
+                setPos(new Point(pos.x, pos.y - 1));
                 remainingSteps[0]--;
-                table.repaint();
+                repaintTable();
             } else {
                 ((Timer) e.getSource()).stop();
 
@@ -87,6 +100,33 @@ public class Bird {
         flightTimer.start();
     }
 
+    public void jump(JTable table) {
+        this.table = table;
+        jump();
+    }
+
+    @Override
+    public void die() {
+        isAlive = false;
+        flying = false;
+        if (flightTimer != null && flightTimer.isRunning()) {
+            flightTimer.stop();
+        }
+        if (hangTimer != null && hangTimer.isRunning()) {
+            hangTimer.stop();
+        }
+    }
+
+    private void repaintTable() {
+        if (table != null) {
+            table.repaint();
+        }
+    }
+
+    public void setTable(JTable table) {
+        this.table = table;
+    }
+
     public boolean isFlying() {
         return flying;
     }
@@ -96,33 +136,64 @@ public class Bird {
         canJump = true;
     }
 
-    // Returns the matching quadrant icon if the given cell is part of the 2x2 bird
+    // Returns the matching quadrant icon if the given cell Point is part of the 2x2 bird
+    public ImageIcon getIconAt(Point cellPos) {
+        return getIconAt((int) cellPos.y, (int) cellPos.x);
+    }
+
     public ImageIcon getIconAt(int r, int c) {
-        if (r == row && c == col) {
+        int birdRow = (int) pos.y;
+        int birdCol = (int) pos.x;
+
+        if (r == birdRow && c == birdCol) {
             return upperLeftIcon;
-        } else if (r == row && c == col + 1) {
+        } else if (r == birdRow && c == birdCol + 1) {
             return upperRightIcon;
-        } else if (r == row + 1 && c == col) {
+        } else if (r == birdRow + 1 && c == birdCol) {
             return lowerLeftIcon;
-        } else if (r == row + 1 && c == col + 1) {
+        } else if (r == birdRow + 1 && c == birdCol + 1) {
             return lowerRightIcon;
         }
         return null;
     }
 
-    public int getRow() {
-        return row;
+    public Point getPos() {
+        return pos;
     }
 
-    public void setRow(int row) {
-        this.row = row;
+    public void setPos(Point pos) {
+        this.pos = pos;
     }
 
-    public int getCol() {
-        return col;
+    public String getName() {
+        return name;
     }
 
-    public void setCol(int col) {
-        this.col = col;
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public double getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(double velocity) {
+        this.velocity = velocity;
+    }
+
+    public double getGravity() {
+        return gravity;
+    }
+
+    public void setGravity(double gravity) {
+        this.gravity = gravity;
     }
 }
