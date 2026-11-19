@@ -18,7 +18,7 @@ The project is organized around a modular object-oriented design, separating gam
 
 ## Class Diagram
 
-![Flappy Bird capstone class diagram](assets/classdiagram/Seratonin-ClassDiagram.jpg)
+![Flappy Bird capstone class diagram](assets/classdiagram/flappybird.png)
 
 ## Requirements
 
