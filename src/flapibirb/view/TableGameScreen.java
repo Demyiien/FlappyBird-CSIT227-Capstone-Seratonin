@@ -35,11 +35,12 @@ public class TableGameScreen extends JFrame {
 
         DefaultTableModel model = new DefaultTableModel(rows, cols);
 
-        // Initialize the bird and pipe objects
-        Bird bird = new Bird(14, 8, cellSize);
+        // Initialize the bird (using Point(x=col, y=row)) and pipe objects
+        Bird bird = new CoolBird("Player", new Point(8, 14), cellSize);
         Pipe pipe = new Pipe(36, rows, cellSize);
 
         table1 = new JTable(model);
+        bird.setTable(table1);
 
         table1.setRowHeight(cellSize);
 
@@ -95,8 +96,8 @@ public class TableGameScreen extends JFrame {
                 cell.setText("");
                 cell.setIcon(null);
 
-                // Check if the current cell belongs to the bird or the pipe
-                ImageIcon birdIcon = bird.getIconAt(row, column);
+                // Check if the current cell Point(x=column, y=row) belongs to the bird or the pipe
+                ImageIcon birdIcon = bird.getIconAt(new Point(column, row));
                 if (birdIcon != null) {
                     cell.setIcon(birdIcon);
                 } else {
@@ -121,7 +122,7 @@ public class TableGameScreen extends JFrame {
                     if (!gravity.isRunning()) {
                         gravity.start();
                     }
-                    bird.jump(table1);
+                    bird.jump();
                     return true;
                 } else if (e.getID() == KeyEvent.KEY_RELEASED) {
                     bird.releaseJump();

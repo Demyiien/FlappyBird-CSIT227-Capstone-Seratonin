@@ -8,13 +8,15 @@ public class Gravity {
 
     public Gravity(Bird bird, JTable table, int totalRows) {
         timer = new Timer(35, e -> {
-            if (bird.isFlying()) {
+            if (!bird.isAlive() || bird.isFlying()) {
                 return;
             }
 
             // Bird is 2x2 cells, so the lowest top-row before hitting the floor is totalRows - 2
-            if (bird.getRow() < totalRows - 2) {
-                bird.setRow(bird.getRow() + 1);
+            Point pos = bird.getPos();
+            if (pos.y < totalRows - 2) {
+                double nextY = Math.min(totalRows - 2, pos.y + bird.getGravity());
+                bird.setPos(new Point(pos.x, nextY));
                 table.repaint();
             }
         });
