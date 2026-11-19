@@ -1,11 +1,19 @@
 package flapibirb.view;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+<<<<<<< HEAD:src/TableGameScreen.java
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+=======
 import flapibirb.controller.*;
 import flapibirb.model.*;
+>>>>>>> cb31fbcc550ce517741d96dfa14e23181c2989f8:src/flapibirb/view/TableGameScreen.java
 
 public class TableGameScreen extends JFrame {
 
@@ -13,18 +21,57 @@ public class TableGameScreen extends JFrame {
     private JPanel panel1;
     private JScrollPane scrollPane;
 
+    //TRIN test additions-----------
+    private String scoreText = "0";
+    private int counter = 0;
+    //TRIN test additions-----------
+
     public TableGameScreen() {
 
         // Load and draw the background image on the main panel
         Image backgroundImage = new ImageIcon("assets/images/background.jpg").getImage();
 
+        try {
+            File font = new File("assets/images/NumberFont.ttf");
+
+
+            if (font != null) {
+                Font numberFont = Font.createFont(Font.TRUETYPE_FONT, font);
+
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(numberFont);
+            }
+
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+        }
+
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                counter++;
+                scoreText = "" + counter;
+
+                // THIS is what updates the value of the label
+                repaint();
+            }
+        });
+        timer.start();
+
         panel1 = new JPanel(new GridBagLayout()) {
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (backgroundImage != null) {
                     g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 }
+
+                // TEST-----------
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Flappy Bird", Font.PLAIN , 82));
+                g.drawString(scoreText, 1000, 100);
+
             }
         };
 
@@ -134,6 +181,8 @@ public class TableGameScreen extends JFrame {
     }
 
     public static void main(String[] args) {
+
+
 
         SwingUtilities.invokeLater(() -> {
             TableGameScreen screen = new TableGameScreen();
