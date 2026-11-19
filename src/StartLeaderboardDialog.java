@@ -6,6 +6,8 @@ import java.net.URL;
 import javax.imageio.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
+import java.util.*;
+import java.lang.*;
 
 public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
@@ -34,12 +36,13 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
     public StartLeaderboardDialog() {
 
         // adding birb radioButtons to birbGroup ButtonGroup
-        ButtonGroup birbGroup = new ButtonGroup();
+        birbGroup = new ButtonGroup();
         birbGroup.add(birb1rb);
         birbGroup.add(birb2rb);
         birbGroup.add(birb3rb);
         birbGroup.add(birb4rb);
         birbGroup.add(birb5rb);
+        birb1rb.setSelected(true);
 
         // changing birb1 icon to photo:
         try {
@@ -230,27 +233,13 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         playButton.setFont(new Font("JetBrains Mono ExtraLight", Font.BOLD, 18));
 
         // leaderboard table stuff
-        DefaultTableModel model = (DefaultTableModel) leaderboardTbl.getModel();
-        model.addColumn("Rank");
-        model.addColumn("Name");
-        model.addColumn("Score");
-        model.addColumn("Birb");
+        DefaultTableModel birbTablemodel = (DefaultTableModel) leaderboardTbl.getModel();
+        birbTablemodel.addColumn("Rank");
+        birbTablemodel.addColumn("Name");
+        birbTablemodel.addColumn("Score");
+        birbTablemodel.addColumn("Birb");
 
-        // placeholder top 10 (wala pay file handling hehe)
-        model.addRow(new Object[]{1, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{2, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{3, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{4, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{5, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{6, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{7, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{8, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{9, "Alliyah", 20, "JustinBiBirb"});
-        model.addRow(new Object[]{10, "Alliyah", 20, "JustinBiBirb"});
-
-
-
-
+        loadLeaderboard(birbTablemodel);
 
         tfName.setName("tfName");
         birb1rb.setName("birb1rb");
@@ -267,13 +256,54 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         playButton.addActionListener(this);
     }
 
+    public String getPlayerName() {
+        String playerName = tfName.getText().trim();
+        return playerName;
+    }
+
+    public String getSelectedBirb() {
+        if (birb2rb.isSelected()) return "Birb 2";
+        if (birb3rb.isSelected()) return "Birb 3";
+        if (birb4rb.isSelected()) return "Birb 4";
+        if (birb5rb.isSelected()) return "Birb 5";
+        return "Birb 1";
+
+    }
+
+
+    private void loadLeaderboard(DefaultTableModel model) {
+        File file = new File("leaderboard.txt");
+        if (!file.exists()) {
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            int rank = 1;
+
+            while ((line = br.readLine()) != null && rank <= 10) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    model.addRow(new Object[] {
+                            rank++,
+                            parts[0].trim(),
+                            Integer.parseInt(parts[1].trim()),
+                            parts[2].trim()
+                   });
+                }
+            }
+
+        } catch (IOException | NumberFormatException e) {
+            System.err.print("Error loading leaderboard: " + e.getMessage());
+        }
+    }
+
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
         if (source == playButton) {
-            String playerName = tfName.getText();
 
-            if (playerName.isEmpty()) {
+            if (getPlayerName().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter your name!", "Missing Name", JOptionPane.WARNING_MESSAGE);
                 tfName.requestFocus();
                 return;
