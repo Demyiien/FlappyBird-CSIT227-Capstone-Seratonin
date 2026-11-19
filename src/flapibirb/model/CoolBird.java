@@ -1,7 +1,9 @@
+package flapibirb.model;
+
 public class CoolBird extends Bird {
 
     public CoolBird() {
-        super("CoolBird");
+        super("flapibirb.model.CoolBird");
     }
 
     public CoolBird(String name) {
