@@ -29,14 +29,14 @@ The development roadmap follows our agreed architectural design:
 * **Package Target:** `flappybird.model`, `flappybird.view`, `flappybird.controller`, `flappybird.data`, `flappybird.exception`
 * **Description:** Refactor current standalone screen into modular classes so each responsibility is clean and testable.
 * **Acceptance Criteria:**
-  - [ ] Package structure created under `src/`.
-  - [ ] `Bird` model created (holds coordinates, velocity, skin selection).
-  - [ ] `Pipe` model created (holds column position, gap bounds, passed state).
+  - [X] Package structure created under `src/`.
+  - [X] `Bird` model created (holds coordinates, velocity, skin selection).
+  - [X] `Pipe` model created (holds column position, gap bounds, passed state).
   - [ ] `GameEngine` or `GameController` created to manage game loop timer and tick updates.
-  - [ ] `TableGameScreen` acts as the primary View consuming model state.
+  - [X] `TableGameScreen` acts as the primary View consuming model state.
 
 #### TICK-02: Bird Physics & Jump Mechanics
-* **Package Target:** `model.Bird`, `controller.GameController`
+* **Package Target:** `flapibirb.model`, `flapibirb.controller`
 * **Description:** Implement gravity, jump impulse, and key listeners on the bird.
 * **Acceptance Criteria:**
   - [x] Gravity updates the bird's vertical position every tick.
@@ -46,7 +46,7 @@ The development roadmap follows our agreed architectural design:
   - [x] Flight hang time negates gravity smoothly during jump ascent.
 
 #### TICK-03: Pipe Slicing, Spawning & Leftward Scrolling
-* **Package Target:** `model.Pipe`, `model.PipeManager`, `view.TableGameScreen`
+* **Package Target:** `flapibirb.model`, `flapibirb.view`
 * **Description:** Slice `assets/images/pipe.png` into cell sub-images and move pipe columns to the left continuously.
 * **Acceptance Criteria:**
   - [x] Load and slice `pipe.png` into cell-sized `ImageIcon`s (top rim, bottom body).
@@ -55,7 +55,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] Automatically discard pipes that scroll past column `< 0`.
 
 #### TICK-04: Collision Detection & Game Over Trigger
-* **Package Target:** `controller.GameController`
+* **Package Target:** `flapibirb.controller`
 * **Description:** Detect when the 2x2 bird collides with any active pipe segment or floor boundary, then pause the loop and show the Game Over dialog.
 * **Acceptance Criteria:**
   - [ ] Exact collision check between the bird's 2x2 bounding box and pipe column cells.
@@ -63,7 +63,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] Instantly stops the timer on collision and triggers the unified popup in "Game Over" mode.
 
 #### TICK-05: Unified Start / Leaderboard / Bird Select Dialog
-* **Package Target:** `view.StartLeaderboardDialog`
+* **Package Target:** `flapibirb.view`
 * **Description:** A single pop-up dialog (`JDialog`) that opens automatically at game launch and on game over.
 * **Acceptance Criteria:**
   - [ ] **Left Side:**
@@ -75,7 +75,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] Modal blocks gameplay until player enters a valid name and clicks "Start".
 
 #### TICK-06: Leaderboard File Handling & Persistence
-* **Package Target:** `data.LeaderboardManager`, `model.ScoreEntry`
+* **Package Target:** `data.LeaderboardManager`, `flapibirb.model`
 * **Description:** Save and load high scores to a local file (`assets/data/leaderboard.txt`).
 * **Acceptance Criteria:**
   - [ ] Flat text format: `playerName,score,birdType,date`.
@@ -96,7 +96,7 @@ The development roadmap follows our agreed architectural design:
   - [ ] User-friendly error messages presented via `JOptionPane`.
 
 #### TICK-08: In-Game Scoreboard & HUD Integration
-* **Package Target:** `view.TableGameScreen`
+* **Package Target:** `flapibirb.view`
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
   - [ ] Point scored when a pipe safely clears the bird's horizontal columns.
