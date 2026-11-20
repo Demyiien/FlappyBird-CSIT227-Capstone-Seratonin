@@ -30,10 +30,10 @@ The development roadmap follows our agreed architectural design:
 * **Description:** Refactor current standalone screen into modular classes so each responsibility is clean and testable.
 * **Acceptance Criteria:**
   - [X] Package structure created under `src/`.
-  - [X] `Bird` flapibirb.model created (holds coordinates, velocity, skin selection).
-  - [X] `Pipe` flapibirb.model created (holds column position, gap bounds, passed state).
+  - [X] `Bird` model created (holds coordinates, velocity, skin selection).
+  - [X] `Pipe` model created (holds column position, gap bounds, passed state).
   - [ ] `GameEngine` or `GameController` created to manage game loop timer and tick updates.
-  - [X] `TableGameScreen` acts as the primary View consuming flapibirb.model state.
+  - [X] `TableGameScreen` acts as the primary View consuming model state.
 
 #### TICK-02: Bird Physics & Jump Mechanics
 * **Package Target:** `flapibirb.model`, `flapibirb.controller`
@@ -46,7 +46,7 @@ The development roadmap follows our agreed architectural design:
   - [x] Flight hang time negates gravity smoothly during jump ascent.
 
 #### TICK-03: Pipe Slicing, Spawning & Leftward Scrolling
-* **Package Target:** `flapibirb.model`, `flapibirb.model`, `flapibirb.view`
+* **Package Target:** `flapibirb.model`, `flapibirb.view`
 * **Description:** Slice `assets/images/pipe.png` into cell sub-images and move pipe columns to the left continuously.
 * **Acceptance Criteria:**
   - [x] Load and slice `pipe.png` into cell-sized `ImageIcon`s (top rim, bottom body).
@@ -99,7 +99,7 @@ The development roadmap follows our agreed architectural design:
 * **Package Target:** `flapibirb.view`
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
-  - [ ] flapibirb.model.Point scored when a pipe safely clears the bird's horizontal columns.
+  - [ ] Point scored when a pipe safely clears the bird's horizontal columns.
   - [ ] Retro-style score display overlay at top-center.
 
 #### TICK-09: Sound Effects & Audio Manager (Optional)
@@ -107,5 +107,5 @@ The development roadmap follows our agreed architectural design:
 * **Description:** Background music and sound effects for jumps, score increments, and collisions.
 * **Acceptance Criteria:**
   - [ ] Jump wing flap sound.
-  - [ ] flapibirb.model.Point score sound.
+  - [ ] Point score sound.
   - [ ] Collision / hit sound.
