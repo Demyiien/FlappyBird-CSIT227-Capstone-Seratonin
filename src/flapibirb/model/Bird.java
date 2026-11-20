@@ -1,9 +1,10 @@
 package flapibirb.model;
 
+import flapibirb.controller.GObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import flapibirb.controller.*;
 
 public abstract class Bird implements GObject {
 
@@ -14,14 +15,14 @@ public abstract class Bird implements GObject {
     private double velocity;
     private double gravity;
 
-    private final int flightStepMs = 50; // ms per upward cell movement
-    private final int extraHangMs = 60;  // extra ms to negate gravity after flying up
+    private final int flightStepMs = 20; // matches GameTime's 4-tick (20ms) upward cadence
+    private final int extraHangMs = 60;  // extra ms to negate gravity at peak after flight
 
     private boolean flying = false;
+    private boolean hanging = false;
     private boolean canJump = true; // prevents holding the jump key to spam jump
     private Timer flightTimer;
     private Timer hangTimer;
-    private JTable table;
 
     private final ImageIcon upperLeftIcon;
     private final ImageIcon upperRightIcon;
@@ -37,8 +38,8 @@ public abstract class Bird implements GObject {
         this.pos = new Point(startPos.x, startPos.y);
         this.score = 0;
         this.isAlive = true;
-        this.velocity = 3.0; // cells moved up per jump
-        this.gravity = 1.0;  // cells moved down per gravity tick
+        this.velocity = 7.5; // cells moved up per jump
+        this.gravity = 0.5;  // cells moved down per gravity tick
 
         // Scale the bird to fit a 2x2 cell area (48x48 px)
         int birdWidth = 2 * cellSize;
@@ -58,13 +59,11 @@ public abstract class Bird implements GObject {
         lowerRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, cellSize, cellSize, cellSize));
     }
 
-    // Fly upward cell-by-cell using flapibirb.model.Point coordinates and negate gravity during flight
+    // Trigger upward flight window and peak hang time synced with GameTime's cadence
     public void jump() {
         if (!isAlive || !canJump) {
             return;
         }
-        canJump = false;
-
         if (flightTimer != null && flightTimer.isRunning()) {
             flightTimer.stop();
         }
@@ -72,39 +71,23 @@ public abstract class Bird implements GObject {
             hangTimer.stop();
         }
 
+        canJump = false;
         flying = true;
-        int jumpCells = (int) Math.round(velocity);
+        hanging = false;
 
-        // Move up 1 cell right away on key press
-        if (pos.y > 0) {
-            setPos(new Point(pos.x, pos.y - 1));
-            repaintTable();
-        }
-
-        final int[] remainingSteps = {Math.max(0, jumpCells - 1)};
-
-        flightTimer = new Timer(flightStepMs, e -> {
-            if (isAlive && remainingSteps[0] > 0 && pos.y > 0) {
-                setPos(new Point(pos.x, pos.y - 1));
-                remainingSteps[0]--;
-                repaintTable();
-            } else {
-                ((Timer) e.getSource()).stop();
-
-                // Keep gravity negated in proportion to flight time + extra ms
-                int negateDuration = (jumpCells * flightStepMs) + extraHangMs;
-                hangTimer = new Timer(negateDuration, evt -> {
-                    flying = false;
-                });
-                hangTimer.setRepeats(false);
-                hangTimer.start();
-            }
+        int flightDuration = Math.max(1, (int) Math.round(velocity)) * flightStepMs;
+        flightTimer = new Timer(flightDuration, e -> {
+            flying = false;
+            hanging = true;
+            hangTimer = new Timer(extraHangMs, evt -> hanging = false);
+            hangTimer.setRepeats(false);
+            hangTimer.start();
         });
+        flightTimer.setRepeats(false);
         flightTimer.start();
     }
 
     public void jump(JTable table) {
-        this.table = table;
         jump();
     }
 
@@ -112,6 +95,7 @@ public abstract class Bird implements GObject {
     public void die() {
         isAlive = false;
         flying = false;
+        hanging = false;
         if (flightTimer != null && flightTimer.isRunning()) {
             flightTimer.stop();
         }
@@ -120,18 +104,12 @@ public abstract class Bird implements GObject {
         }
     }
 
-    private void repaintTable() {
-        if (table != null) {
-            table.repaint();
-        }
-    }
-
-    public void setTable(JTable table) {
-        this.table = table;
-    }
-
     public boolean isFlying() {
         return flying;
+    }
+
+    public boolean isHanging() {
+        return hanging;
     }
 
     // Re-enable jumping only after the player releases the jump key
@@ -139,7 +117,7 @@ public abstract class Bird implements GObject {
         canJump = true;
     }
 
-    // Returns the matching quadrant icon if the given cell flapibirb.model.Point is part of the 2x2 bird
+    // Returns the matching quadrant icon if the given cell Point is part of the 2x2 bird
     public ImageIcon getIconAt(Point cellPos) {
         return getIconAt((int) cellPos.y, (int) cellPos.x);
     }
@@ -158,6 +136,22 @@ public abstract class Bird implements GObject {
             return lowerRightIcon;
         }
         return null;
+    }
+
+    public int getRow() {
+        return (int) pos.y;
+    }
+
+    public void setRow(int row) {
+        pos.y = Math.max(0, row);
+    }
+
+    public int getCol() {
+        return (int) pos.x;
+    }
+
+    public void setCol(int col) {
+        pos.x = col;
     }
 
     public Point getPos() {

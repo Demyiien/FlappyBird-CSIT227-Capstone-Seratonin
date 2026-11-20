@@ -3,7 +3,7 @@ package flapibirb.model;
 public class CoolBird extends Bird {
 
     public CoolBird() {
-        super("flapibirb.model.CoolBird");
+        super("CoolBird");
     }
 
     public CoolBird(String name) {

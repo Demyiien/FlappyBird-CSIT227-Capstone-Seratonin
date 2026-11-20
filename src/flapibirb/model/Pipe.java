@@ -1,11 +1,13 @@
 package flapibirb.model;
 
+import flapibirb.controller.GObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
-public class Pipe {
+public class Pipe implements GObject {
 
     private int col;
     private final int pipeCols = 3; // pipe is 3 cells wide
@@ -21,35 +23,39 @@ public class Pipe {
     public Pipe(int startCol, int totalRows, int cellSize) {
         this.col = startCol;
 
-        // Load pipe image and put it in a BufferedImage so we can crop it
-        Image originalPipe = new ImageIcon("assets/images/pipe.png").getImage();
-        int srcWidth = originalPipe.getWidth(null);
-        int srcHeight = originalPipe.getHeight(null);
+        // Load split pipe tip and hose images
+        Image rawPipeTip = new ImageIcon("assets/images/pipe-tip.png").getImage();
+        BufferedImage pipeTipImage = new BufferedImage(
+                rawPipeTip.getWidth(null),
+                rawPipeTip.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+        );
+        Graphics2D graphicsPipeTip = pipeTipImage.createGraphics();
+        graphicsPipeTip.drawImage(rawPipeTip, 0, 0, null);
+        graphicsPipeTip.dispose();
 
-        BufferedImage fullPipe = new BufferedImage(srcWidth, srcHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gPipe = fullPipe.createGraphics();
-        gPipe.drawImage(originalPipe, 0, 0, null);
-        gPipe.dispose();
-
-        // Crop out the empty sides of pipe.png and separate the top rim from the bottom body
-        int cropX = 67;
-        int cropW = 271;
-        BufferedImage rawPipeTop = fullPipe.getSubimage(cropX, 2, cropW, 110);
-        BufferedImage rawPipeBottom = fullPipe.getSubimage(cropX, 113, cropW, 395);
-
-        int pipePixelWidth = pipeCols * cellSize;
+        Image rawPipeHose = new ImageIcon("assets/images/pipe-hose.png").getImage();
+        BufferedImage pipeHoseImage = new BufferedImage(
+                rawPipeHose.getWidth(null),
+                rawPipeHose.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+        );
+        Graphics2D graphicsPipeHose = pipeHoseImage.createGraphics();
+        graphicsPipeHose.drawImage(rawPipeHose, 0, 0, null);
+        graphicsPipeHose.dispose();
 
         // Resize the pipe rim and body to match the width of 3 cells
+        int pipePixelWidth = pipeCols * cellSize;
         BufferedImage scaledPipeTop = new BufferedImage(pipePixelWidth, cellSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gTop = scaledPipeTop.createGraphics();
         gTop.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gTop.drawImage(rawPipeTop, 0, 0, pipePixelWidth, cellSize, null);
+        gTop.drawImage(pipeTipImage, 0, 0, pipePixelWidth, cellSize, null);
         gTop.dispose();
 
         BufferedImage scaledPipeBottom = new BufferedImage(pipePixelWidth, cellSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gBot = scaledPipeBottom.createGraphics();
         gBot.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gBot.drawImage(rawPipeBottom, 0, 0, pipePixelWidth, cellSize, null);
+        gBot.drawImage(pipeHoseImage, 0, 0, pipePixelWidth, cellSize, null);
         gBot.dispose();
 
         // Slice the pipe rim and body into 3 columns (left, middle, right)
@@ -101,5 +107,9 @@ public class Pipe {
 
     public void setCol(int col) {
         this.col = col;
+    }
+
+    @Override
+    public void die() {
     }
 }
