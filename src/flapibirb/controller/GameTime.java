@@ -18,17 +18,8 @@ public class GameTime {
             game.handleObjects();
 
             if (bird.isAlive()) {
-                if (ticks % 4 == 0 && bird.isFlying()) {
-                    bird.setRow(bird.getRow() - 1);
-                }
-                if (ticks % 6 == 0 && bird.isHanging()) {
-                    bird.rotateTowardLevel();
-                }
-                if (ticks % 6 == 0 && !bird.isFlying() && !bird.isHanging()) {
-                    if (bird.getRow() < rows - 2) {
-                        bird.setRow(bird.getRow() + Math.max(1, (int) Math.round(bird.getGravity())));
-                        bird.rotateDown();
-                    }
+                if (ticks % 4 == 0) {
+                    bird.updatePhysics(rows);
                 }
                 if (ticks % 10 == 0) {
                     bird.setCol(bird.getCol() + 1);

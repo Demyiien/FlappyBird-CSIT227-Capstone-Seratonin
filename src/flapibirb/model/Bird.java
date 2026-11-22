@@ -15,20 +15,18 @@ public abstract class Bird implements GObject {
     private double velocity;
     private double gravity;
 
+    private static final double JUMP_VELOCITY = -1.03;
+    private static final double DEFAULT_GRAVITY = 0.11;
+    private static final double MAX_FALL_VELOCITY = 1.30;
+
     private static final double JUMP_UP_ANGLE = -25.0;
-    private static final double MAX_FALL_ANGLE = 70.0;
-    private static final double HANG_ROTATE_STEP = 5.0;
-    private static final double FALL_ROTATE_STEP = 6.0;
+    private static final double MAX_FALL_ANGLE = 90.0;
+    private static final double FALL_ROTATE_THRESHOLD = 0.20;
+    private static final double FALL_ROTATE_BASE_SPEED = 7.5;
+    private static final double FALL_ROTATE_VEL_SCALE = 7.5;
 
     private final int cellSize;
-    private final int flightStepMs = 20; // matches GameTime's 4-tick (20ms) upward cadence
-    private final int extraHangMs = 60;  // extra ms to negate gravity at peak after flight
-
-    private boolean flying = false;
-    private boolean hanging = false;
     private boolean canJump = true; // prevents holding the jump key to spam jump
-    private Timer flightTimer;
-    private Timer hangTimer;
 
     private final BufferedImage baseBirdImage;
     private double rotationAngle = 0.0;
@@ -48,8 +46,8 @@ public abstract class Bird implements GObject {
         this.pos = new Point(startPos.x, startPos.y);
         this.score = 0;
         this.isAlive = true;
-        this.velocity = 7.5; // cells moved up per jump
-        this.gravity = 0.5;  // cells moved down per gravity tick
+        this.velocity = 0.0;
+        this.gravity = DEFAULT_GRAVITY;
         this.cellSize = cellSize;
 
         Image originalBird = new ImageIcon("assets/images/flappy-icon.png").getImage();
@@ -105,37 +103,46 @@ public abstract class Bird implements GObject {
         lowerRightIcon = new ImageIcon(rotated.getSubimage(cellSize, cellSize, cellSize, cellSize));
     }
 
-    // Trigger upward flight window, upward tilt, and peak hang time synced with GameTime's cadence
+    // Apply instant upward flap impulse and tilt nose up
     public void jump() {
         if (!isAlive || !canJump) {
             return;
         }
-        if (flightTimer != null && flightTimer.isRunning()) {
-            flightTimer.stop();
-        }
-        if (hangTimer != null && hangTimer.isRunning()) {
-            hangTimer.stop();
-        }
-
         canJump = false;
-        flying = true;
-        hanging = false;
+        velocity = JUMP_VELOCITY;
         setRotationAngle(JUMP_UP_ANGLE);
-
-        int flightDuration = Math.max(1, (int) Math.round(velocity)) * flightStepMs;
-        flightTimer = new Timer(flightDuration, e -> {
-            flying = false;
-            hanging = true;
-            hangTimer = new Timer(extraHangMs, evt -> hanging = false);
-            hangTimer.setRepeats(false);
-            hangTimer.start();
-        });
-        flightTimer.setRepeats(false);
-        flightTimer.start();
     }
 
     public void jump(JTable table) {
         jump();
+    }
+
+    // Advance parabolic vertical velocity/position and pitch nose down smoothly while falling
+    public void updatePhysics(int totalRows) {
+        if (!isAlive) {
+            return;
+        }
+
+        velocity = Math.min(MAX_FALL_VELOCITY, velocity + gravity);
+        pos.y += velocity;
+
+        double maxRow = totalRows - 2;
+        if (pos.y < 0.0) {
+            pos.y = 0.0;
+            if (velocity < 0.0) {
+                velocity = 0.0;
+            }
+        } else if (pos.y >= maxRow) {
+            pos.y = maxRow;
+            velocity = 0.0;
+        }
+
+        if (velocity < FALL_ROTATE_THRESHOLD) {
+            setRotationAngle(JUMP_UP_ANGLE);
+        } else if (pos.y < maxRow) {
+            double rotateStep = FALL_ROTATE_BASE_SPEED + (velocity * FALL_ROTATE_VEL_SCALE);
+            setRotationAngle(rotationAngle + rotateStep);
+        }
     }
 
     public void setRotationAngle(double angleDegrees) {
@@ -147,35 +154,14 @@ public abstract class Bird implements GObject {
         return rotationAngle;
     }
 
-    public void rotateTowardLevel() {
-        if (rotationAngle < 0.0) {
-            setRotationAngle(Math.min(0.0, rotationAngle + HANG_ROTATE_STEP));
-        }
-    }
-
-    public void rotateDown() {
-        setRotationAngle(Math.min(MAX_FALL_ANGLE, rotationAngle + FALL_ROTATE_STEP));
-    }
-
     @Override
     public void die() {
         isAlive = false;
-        flying = false;
-        hanging = false;
-        if (flightTimer != null && flightTimer.isRunning()) {
-            flightTimer.stop();
-        }
-        if (hangTimer != null && hangTimer.isRunning()) {
-            hangTimer.stop();
-        }
+        velocity = 0.0;
     }
 
     public boolean isFlying() {
-        return flying;
-    }
-
-    public boolean isHanging() {
-        return hanging;
+        return velocity < 0.0;
     }
 
     // Re-enable jumping only after the player releases the jump key
@@ -189,7 +175,7 @@ public abstract class Bird implements GObject {
     }
 
     public ImageIcon getIconAt(int r, int c) {
-        int birdRow = (int) pos.y;
+        int birdRow = Math.max(0, (int) Math.round(pos.y));
         int birdCol = (int) pos.x;
 
         if (r == birdRow && c == birdCol) {
@@ -205,7 +191,7 @@ public abstract class Bird implements GObject {
     }
 
     public int getRow() {
-        return (int) pos.y;
+        return Math.max(0, (int) Math.round(pos.y));
     }
 
     public void setRow(int row) {
