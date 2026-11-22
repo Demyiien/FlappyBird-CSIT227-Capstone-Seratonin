@@ -139,7 +139,7 @@ public class Game extends JFrame {
     }
 
     public void initializeTable() {
-        Image backgroundImage = new ImageIcon("assets/images/background.jpg").getImage();
+        Image backgroundImage = new ImageIcon("assets/images/blueBG.jpg").getImage();
         mainPanel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
