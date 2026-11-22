@@ -15,6 +15,12 @@ public abstract class Bird implements GObject {
     private double velocity;
     private double gravity;
 
+    private static final double JUMP_UP_ANGLE = -25.0;
+    private static final double MAX_FALL_ANGLE = 70.0;
+    private static final double HANG_ROTATE_STEP = 5.0;
+    private static final double FALL_ROTATE_STEP = 6.0;
+
+    private final int cellSize;
     private final int flightStepMs = 20; // matches GameTime's 4-tick (20ms) upward cadence
     private final int extraHangMs = 60;  // extra ms to negate gravity at peak after flight
 
@@ -24,10 +30,14 @@ public abstract class Bird implements GObject {
     private Timer flightTimer;
     private Timer hangTimer;
 
-    private final ImageIcon upperLeftIcon;
-    private final ImageIcon upperRightIcon;
-    private final ImageIcon lowerLeftIcon;
-    private final ImageIcon lowerRightIcon;
+    private final BufferedImage baseBirdImage;
+    private double rotationAngle = 0.0;
+    private int lastRenderedAngle = Integer.MIN_VALUE;
+
+    private ImageIcon upperLeftIcon;
+    private ImageIcon upperRightIcon;
+    private ImageIcon lowerLeftIcon;
+    private ImageIcon lowerRightIcon;
 
     public Bird(String name) {
         this(name, new Point(8, 14), 24);
@@ -40,26 +50,62 @@ public abstract class Bird implements GObject {
         this.isAlive = true;
         this.velocity = 7.5; // cells moved up per jump
         this.gravity = 0.5;  // cells moved down per gravity tick
+        this.cellSize = cellSize;
 
-        // Scale the bird to fit a 2x2 cell area (48x48 px)
-        int birdWidth = 2 * cellSize;
-        int birdHeight = 2 * cellSize;
         Image originalBird = new ImageIcon("assets/images/flappy-icon.png").getImage();
+        int rawW = originalBird.getWidth(null);
+        int rawH = originalBird.getHeight(null);
 
-        BufferedImage bufferedBird = new BufferedImage(birdWidth, birdHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = bufferedBird.createGraphics();
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.drawImage(originalBird, 0, 0, birdWidth, birdHeight, null);
-        g2d.dispose();
+        if (rawW > 0 && rawH > 0) {
+            BufferedImage fullBird = new BufferedImage(rawW, rawH, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D gRaw = fullBird.createGraphics();
+            gRaw.drawImage(originalBird, 0, 0, null);
+            gRaw.dispose();
 
-        // Split the bird image into 4 cells (upper-left, upper-right, lower-left, lower-right)
-        upperLeftIcon = new ImageIcon(bufferedBird.getSubimage(0, 0, cellSize, cellSize));
-        upperRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, 0, cellSize, cellSize));
-        lowerLeftIcon = new ImageIcon(bufferedBird.getSubimage(0, cellSize, cellSize, cellSize));
-        lowerRightIcon = new ImageIcon(bufferedBird.getSubimage(cellSize, cellSize, cellSize, cellSize));
+            // Trim top-left mark and top padding on the 377x376 sprite so rotation pivots around the bird center
+            if (rawW == 377 && rawH == 376) {
+                baseBirdImage = fullBird.getSubimage(1, 71, 376, 282);
+            } else {
+                baseBirdImage = fullBird;
+            }
+        } else {
+            baseBirdImage = new BufferedImage(2 * cellSize, 2 * cellSize, BufferedImage.TYPE_INT_ARGB);
+        }
+
+        updateRotatedIcons(0.0);
     }
 
-    // Trigger upward flight window and peak hang time synced with GameTime's cadence
+    // Rotate the bird sprite within the 2x2 cell canvas and re-slice the 4 quadrant icons
+    private void updateRotatedIcons(double angleDegrees) {
+        int quantized = (int) Math.round(angleDegrees);
+        if (quantized == lastRenderedAngle) {
+            return;
+        }
+        lastRenderedAngle = quantized;
+
+        int canvasSize = 2 * cellSize;
+        double maxDim = canvasSize * 0.80;
+        double srcW = baseBirdImage.getWidth();
+        double srcH = baseBirdImage.getHeight();
+        double scale = Math.min(maxDim / srcW, maxDim / srcH);
+        int drawW = Math.max(1, (int) Math.round(srcW * scale));
+        int drawH = Math.max(1, (int) Math.round(srcH * scale));
+
+        BufferedImage rotated = new BufferedImage(canvasSize, canvasSize, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = rotated.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.rotate(Math.toRadians(quantized), canvasSize / 2.0, canvasSize / 2.0);
+        g2d.drawImage(baseBirdImage, (canvasSize - drawW) / 2, (canvasSize - drawH) / 2, drawW, drawH, null);
+        g2d.dispose();
+
+        upperLeftIcon = new ImageIcon(rotated.getSubimage(0, 0, cellSize, cellSize));
+        upperRightIcon = new ImageIcon(rotated.getSubimage(cellSize, 0, cellSize, cellSize));
+        lowerLeftIcon = new ImageIcon(rotated.getSubimage(0, cellSize, cellSize, cellSize));
+        lowerRightIcon = new ImageIcon(rotated.getSubimage(cellSize, cellSize, cellSize, cellSize));
+    }
+
+    // Trigger upward flight window, upward tilt, and peak hang time synced with GameTime's cadence
     public void jump() {
         if (!isAlive || !canJump) {
             return;
@@ -74,6 +120,7 @@ public abstract class Bird implements GObject {
         canJump = false;
         flying = true;
         hanging = false;
+        setRotationAngle(JUMP_UP_ANGLE);
 
         int flightDuration = Math.max(1, (int) Math.round(velocity)) * flightStepMs;
         flightTimer = new Timer(flightDuration, e -> {
@@ -89,6 +136,25 @@ public abstract class Bird implements GObject {
 
     public void jump(JTable table) {
         jump();
+    }
+
+    public void setRotationAngle(double angleDegrees) {
+        rotationAngle = Math.max(JUMP_UP_ANGLE, Math.min(MAX_FALL_ANGLE, angleDegrees));
+        updateRotatedIcons(rotationAngle);
+    }
+
+    public double getRotationAngle() {
+        return rotationAngle;
+    }
+
+    public void rotateTowardLevel() {
+        if (rotationAngle < 0.0) {
+            setRotationAngle(Math.min(0.0, rotationAngle + HANG_ROTATE_STEP));
+        }
+    }
+
+    public void rotateDown() {
+        setRotationAngle(Math.min(MAX_FALL_ANGLE, rotationAngle + FALL_ROTATE_STEP));
     }
 
     @Override
