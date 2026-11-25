@@ -10,7 +10,7 @@ The development roadmap follows our agreed architectural design:
 
 | Ticket ID | Title | Module / Package | Priority | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done |
+| **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done (Josh) |
 | **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | ✅ Done (TJ) |
 | **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | ✅ Done (Josh) |
 | **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | ✅ Done (Dom) |
@@ -19,7 +19,7 @@ The development roadmap follows our agreed architectural design:
 | **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 🚧 In Progress (Liyah) |
 | **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
 | **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 🚧 In Progress (Trin) |
-| **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 💡 Proposed |
+| **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 🚧 In Progress (Josh) |
 
 ---
 
