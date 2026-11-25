@@ -3,37 +3,37 @@
 The development roadmap follows our agreed architectural design:
 1. **Modal Popup System:** A unified popup dialog for Start / Game Over containing player name input + bird selector on the left, and the live leaderboard on the right.
 2. **Modular OOP Architecture:** Clean separation across `model`, `view`, `controller`, `data`, and `exception` packages.
-3. **Pipe Sprite Slicing & Continuous Scrolling:** Slicing `pipe.png` into cell-sized icons and continuously scrolling pipes leftward.
+3. **Pipe Sprite Slicing & Continuous Scrolling:** Slicing pipe assets (`pipe-tip.png` and `pipe-hose.png`) into cell-sized icons and continuously scrolling pipes leftward.
 4. **Data Persistence:** Flat text file storage (`assets/data/leaderboard.txt`) using streams and custom exceptions.
 
 ### Ticket Summary Board
 
 | Ticket ID | Title | Module / Package | Priority | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done |
-| **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | 🚧 In Progress (TJ) |
-| **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | 🚧 In Progress (Josh) |
-| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | 🚧 In Progress (Dom) |
+| **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done (Josh) |
+| **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | ✅ Done (TJ) |
+| **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | ✅ Done (Josh) |
+| **TICK-03** | Pipe Generation, Slicing & Leftward Movement | `model`, `view` | High | ✅ Done (Dom) |
 | **TICK-04** | Collision Detection & Game Flow Trigger | `controller` | High | 📝 Ready for Dev (Name) |
 | **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `view`, `model` | High | 🚧 In Progress (Liyah) |
 | **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 🚧 In Progress (Liyah) |
 | **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
 | **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 🚧 In Progress (Trin) |
-| **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 💡 Proposed |
+| **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 🚧 In Progress (Josh) |
 
 ---
 
 ### Detailed Sprint Tickets
 
 #### TICK-01: Modular OOP Architecture Setup
-* **Package Target:** `flappybird.model`, `flappybird.view`, `flappybird.controller`, `flappybird.data`, `flappybird.exception`
+* **Package Target:** `flapibirb.model`, `flapibirb.view`, `flapibirb.controller`, `flapibirb.data`, `flapibirb.exception`
 * **Description:** Refactor current standalone screen into modular classes so each responsibility is clean and testable.
 * **Acceptance Criteria:**
-  - [X] Package structure created under `src/`.
-  - [X] `Bird` model created (holds coordinates, velocity, skin selection).
-  - [X] `Pipe` model created (holds column position, gap bounds, passed state).
-  - [ ] `GameEngine` or `GameController` created to manage game loop timer and tick updates.
-  - [X] `TableGameScreen` acts as the primary View consuming model state.
+  - [x] Package structure created under `src/`.
+  - [x] `Bird` model created (holds coordinates, velocity, skin selection).
+  - [x] `Pipe` model created (holds column position, gap bounds, passed state).
+  - [x] `GameTime` / controller created to manage game loop timer and tick updates.
+  - [x] `Game` (replacing `TableGameScreen`) acts as the primary View consuming model state.
 
 #### TICK-02: Bird Physics & Jump Mechanics
 * **Package Target:** `flapibirb.model`, `flapibirb.controller`
@@ -41,18 +41,18 @@ The development roadmap follows our agreed architectural design:
 * **Acceptance Criteria:**
   - [x] Gravity updates the bird's vertical position every tick.
   - [x] Pressing `SPACE`, `UP`, or `W` triggers upward movement.
-  - [ ] Start trigger: Negate / pause gravity until player initiates first jump.
+  - [x] Start trigger: Negate / pause gravity until player initiates first jump.
   - [x] Clamp row bounds so the bird cannot fly above row `0` or drop below floor bounds.
   - [x] Flight hang time negates gravity smoothly during jump ascent.
 
 #### TICK-03: Pipe Slicing, Spawning & Leftward Scrolling
 * **Package Target:** `flapibirb.model`, `flapibirb.view`
-* **Description:** Slice `assets/images/pipe.png` into cell sub-images and move pipe columns to the left continuously.
+* **Description:** Slice pipe sprites (`assets/images/pipe-tip.png` and `assets/images/pipe-hose.png`) into cell sub-images and move pipe columns to the left continuously.
 * **Acceptance Criteria:**
-  - [x] Load and slice `pipe.png` into cell-sized `ImageIcon`s (top rim, bottom body).
-  - [ ] Move active pipes leftward by 1 column every $N$ ticks.
-  - [ ] Continuously spawn new pipes with randomized gaps at the right edge of the grid.
-  - [ ] Automatically discard pipes that scroll past column `< 0`.
+  - [x] Load and slice pipe sprites into cell-sized `ImageIcon`s (top rim, bottom body).
+  - [x] Move active pipes leftward by 1 column every $N$ ticks.
+  - [x] Continuously spawn new pipes with randomized gaps at the right edge of the grid.
+  - [x] Automatically discard pipes that scroll past column `< 0`.
 
 #### TICK-04: Collision Detection & Game Over Trigger
 * **Package Target:** `flapibirb.controller`
@@ -66,12 +66,12 @@ The development roadmap follows our agreed architectural design:
 * **Package Target:** `flapibirb.view`
 * **Description:** A single pop-up dialog (`JDialog`) that opens automatically at game launch and on game over.
 * **Acceptance Criteria:**
-  - [ ] **Left Side:**
+  - [x] **Left Side:**
     - Player name input (`JTextField`).
     - Bird selector (preview thumbnails / radio buttons to choose bird skin/color).
     - "Start Game" / "Play Again" button.
-  - [ ] **Right Side:**
-    - Leaderboard table (`JTable`) displaying Top 10 scores (`Rank`, `Name`, `Score`, `Bird`).
+  - [x] **Right Side:**
+    - Leaderboard table (`JTable`) displaying Top 10 scores (`Rank`, `Name`, `Score`, `Birb`).
   - [ ] Modal blocks gameplay until player enters a valid name and clicks "Start".
 
 #### TICK-06: Leaderboard File Handling & Persistence
@@ -79,7 +79,7 @@ The development roadmap follows our agreed architectural design:
 * **Description:** Save and load high scores to a local file (`assets/data/leaderboard.txt`).
 * **Acceptance Criteria:**
   - [ ] Flat text format: `playerName,score,birdType,date`.
-  - [ ] Reads file on startup using `BufferedReader` and populates the leaderboard table.
+  - [x] Reads file on startup using `BufferedReader` and populates the leaderboard table.
   - [ ] Appends new scores upon Game Over using `BufferedWriter`.
   - [ ] Sorts scores in descending order (`ScoreEntry` implements `Comparable<ScoreEntry>`).
   - [ ] Auto-creates the data directory and file if it does not exist yet.
@@ -100,7 +100,7 @@ The development roadmap follows our agreed architectural design:
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
   - [ ] Point scored when a pipe safely clears the bird's horizontal columns.
-  - [ ] Retro-style score display overlay at top-center.
+  - [x] Retro-style score display overlay at top-center.
 
 #### TICK-09: Sound Effects & Audio Manager (Optional)
 * **Package Target:** `audio.SoundManager`

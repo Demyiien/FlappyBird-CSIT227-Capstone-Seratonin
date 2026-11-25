@@ -32,8 +32,8 @@ In IntelliJ IDEA, set the Project SDK and language level to 21. Enable the bundl
 ## Run the Project
 
 1. Open the project folder in IntelliJ IDEA with JDK 21 configured.
-2. Open [`src/TableGameScreen.java`](src/TableGameScreen.java).
-3. Run `TableGameScreen.main()`.
+2. Open [`src/flapibirb/view/Game.java`](src/flapibirb/view/Game.java).
+3. Run `Game.main()`.
 
 ## Project Documentation
 

@@ -57,6 +57,9 @@ public class Game extends JFrame {
         setLocationRelativeTo(null);
 
         gameTable.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+            private ImageIcon pipeLayerIcon;
+            private ImageIcon birdLayerIcon;
+
             @Override
             public Component getTableCellRendererComponent(
                     JTable table, Object value, boolean isSelected,
@@ -74,21 +77,29 @@ public class Game extends JFrame {
 
                 int worldCol = column + getCameraX();
 
-                // Check if the current world cell belongs to the bird or any active pipe
-                ImageIcon birdIcon = bird.getIconAt(new Point(worldCol, row));
-                if (birdIcon != null) {
-                    cell.setIcon(birdIcon);
-                } else {
-                    for (Pipe pipe : pipes) {
-                        ImageIcon pipeIcon = pipe.getIconAt(row, worldCol);
-                        if (pipeIcon != null) {
-                            cell.setIcon(pipeIcon);
-                            break;
-                        }
+                // Layer order: BGPhoto (mainPanel) -> Pipe -> Bird
+                birdLayerIcon = bird.getIconAt(new Point(worldCol, row));
+                pipeLayerIcon = null;
+                for (Pipe pipe : pipes) {
+                    ImageIcon pipeIcon = pipe.getIconAt(row, worldCol);
+                    if (pipeIcon != null) {
+                        pipeLayerIcon = pipeIcon;
+                        break;
                     }
                 }
 
                 return cell;
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (pipeLayerIcon != null) {
+                    pipeLayerIcon.paintIcon(this, g, 0, 0);
+                }
+                if (birdLayerIcon != null) {
+                    birdLayerIcon.paintIcon(this, g, 0, 0);
+                }
             }
         });
 
@@ -128,7 +139,7 @@ public class Game extends JFrame {
     }
 
     public void initializeTable() {
-        Image backgroundImage = new ImageIcon("assets/images/background.jpg").getImage();
+        Image backgroundImage = new ImageIcon("assets/images/blueBG.jpg").getImage();
         mainPanel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
