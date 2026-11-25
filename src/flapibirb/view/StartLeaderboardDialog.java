@@ -8,12 +8,10 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.io.*;
-import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.lang.*;
 
 public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
@@ -32,7 +30,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
     private JLabel leaderboardLabel;
     private JTable leaderboardTbl;
 
-    // Palette
+    // palette
     private static final Color CARD_CREAM = new Color(246, 243, 235);
     private static final Color BORDER_NAVY = new Color(36, 52, 92);
     private static final Color SELECT_GOLD_BG = new Color(255, 238, 175);
@@ -50,13 +48,14 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
     // ButtonGroup so only one can be picked at a time
     private ButtonGroup birbGroup;
+    private boolean started = false;
 
-    // For file handling
+    // for file handling
     private static final String leaderboardFile = "leaderboard.txt";
     private static final int maxEntries = 100;
 
     public StartLeaderboardDialog() {
-        // 1. Load FlappyBirdy.ttf for the big top sign and PressStart2P-Regular.ttf for all UI text
+        // load FlappyBirdy.ttf for the big top sign and PressStart2P-Regular.ttf for all UI text
         bannerFont = loadCustomFont("/FlappyBirdy.ttf", 105f);
         Font titleFont = loadCustomFont("/PressStart2P-Regular.ttf", 18f);
         Font labelFont = loadCustomFont("/PressStart2P-Regular.ttf", 15f);
@@ -65,11 +64,11 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         Font tableHeaderFont = loadCustomFont("/PressStart2P-Regular.ttf", 12f);
         Font tableBodyFont = loadCustomFont("/PressStart2P-Regular.ttf", 11f);
 
-        // Pre-render the solid white "FlappyBirb" sign and bird sprite synchronously
+        // pre-render the solid white "FlappyBirb" sign and bird sprite synchronously
         cachedBannerImg = createSolidFlappyBanner("FlappyBirb", bannerFont);
         cachedBannerBirdImg = loadSyncScaledImage("/flappy-icon.png", 68, 68);
 
-        // 2. Initialize birbGroup ButtonGroup
+        // initialize birbGroup ButtonGroup
         birbGroup = new ButtonGroup();
         birbGroup.add(birb1rb);
         birbGroup.add(birb2rb);
@@ -77,21 +76,24 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         birbGroup.add(birb4rb);
         birbGroup.add(birb5rb);
 
-        // Setup birb radio buttons with custom badge icons
+        // setup birb radio buttons with custom badge icons
         setupBirbOption(birb1rb, "/flappy-icon.png", "/liyahBird.png");
         setupBirbOption(birb2rb, "/flappy-icon.png", "/liyahBird.png");
         setupBirbOption(birb3rb, "/flappy-icon.png", "/liyahBird.png");
         setupBirbOption(birb4rb, "/flappy-icon.png", "/liyahBird.png");
         setupBirbOption(birb5rb, "/flappy-icon.png", "/liyahBird.png");
 
-        // 3. Add top padding so the big [FlappyBirb + Bird] banner sits cleanly above both panels
+        // default selection so a birb is always chosen
+        birb1rb.setSelected(true);
+
+        // add top padding so the big [FlappyBirb + Bird] banner sits cleanly above both panels
         pnlMain.setBorder(new EmptyBorder(125, 30, 25, 30));
 
-        // 4. Style startPnl & leaderboardPnl with clean rounded corners
+        // style startPnl & leaderboardPnl with clean rounded corners
         styleCreamCardPanel(startPnl, 16);
         styleCreamCardPanel(leaderboardPnl, 10);
 
-        // 5. Style labels and text field with PressStart2P
+        // style labels and text field with PressStart2P
         nameLabel.setFont(labelFont);
         nameLabel.setForeground(BORDER_NAVY);
 
@@ -109,7 +111,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
                 new EmptyBorder(10, 12, 10, 12)
         ));
 
-        // 6. Style playButton as gold pill button with PressStart2P
+        // style playButton as gold pill button with PressStart2P
         playButton.setFont(buttonFont);
         playButton.setBackground(GOLD_BTN);
         playButton.setForeground(BORDER_NAVY);
@@ -120,7 +122,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
                 new EmptyBorder(14, 24, 14, 24)
         ));
 
-        // 7. Leaderboard table setup (Rank, Name, Score — all centered!)
+        // leaderboard table setup (Rank, Name, Score — all centered!)
         DefaultTableModel model = new DefaultTableModel(new String[]{"Rank", "Name", "Score"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -129,24 +131,13 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         };
         leaderboardTbl.setModel(model);
 
-        // placeholder top 10
-        model.addRow(new Object[]{1, "Alliyah", 20});
-        model.addRow(new Object[]{2, "Alliyah", 20});
-        model.addRow(new Object[]{3, "Alliyah", 20});
-        model.addRow(new Object[]{4, "Alliyah", 20});
-        model.addRow(new Object[]{5, "Alliyah", 20});
-        model.addRow(new Object[]{6, "Alliyah", 20});
-        model.addRow(new Object[]{7, "Alliyah", 20});
-        model.addRow(new Object[]{8, "Alliyah", 20});
-        model.addRow(new Object[]{9, "Alliyah", 20});
-        model.addRow(new Object[]{10, "Alliyah", 20});
-
         loadTop10();
 
         leaderboardTbl.setFont(tableBodyFont);
         leaderboardTbl.setShowGrid(false);
         leaderboardTbl.setIntercellSpacing(new Dimension(0, 0));
         leaderboardTbl.setForeground(BORDER_NAVY);
+        leaderboardTbl.setBackground(ROW_ODD);
         leaderboardTbl.setFillsViewportHeight(true);
 
         JTableHeader header = leaderboardTbl.getTableHeader();
@@ -173,7 +164,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
             leaderboardTbl.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
         }
 
-        // Stretch the 10 rows dynamically to fill 100% of the scroll pane height
+        // stretch the 10 rows dynamically to fill 100% of the scroll pane height
         SwingUtilities.invokeLater(() -> {
             Container parent = leaderboardTbl.getParent();
             if (parent instanceof JViewport) {
@@ -186,7 +177,6 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
                 });
             }
         });
-
 
         tfName.setName("tfName");
         birb1rb.setName("birb1rb");
@@ -201,38 +191,73 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         leaderboardTbl.setName("leaderboardTbl");
 
         playButton.addActionListener(this);
+
+        // Configure dialog directly inside the constructor so callers (e.g., Game) get a ready modal dialog
+        setContentPane(pnlMain);
+        setTitle("Flappy Birb");
+        setModal(true);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                JOptionPane.showMessageDialog(
+                        StartLeaderboardDialog.this,
+                        "Please enter your name and click Start to play!",
+                        "Start Game Required",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                tfName.requestFocus();
+            }
+        });
+        pack();
+        setLocationRelativeTo(null);
     }
 
-    // File writing
-    private void writeScore(String playerName, int score) {
-        String cleanName = playerName.trim().replace(",", " ");
-        java.util.List<String[]> entries = readAllFromFile();
+    public String getPlayerName() {
+        return tfName.getText().trim();
+    }
 
-        // Placeholder functions muna cos collision logic is wala pa
-        // Adds names to the first index
+    public int getSelectedBirb() {
+        if (birb1rb.isSelected()) return 1;
+        if (birb2rb.isSelected()) return 2;
+        if (birb3rb.isSelected()) return 3;
+        if (birb4rb.isSelected()) return 4;
+        if (birb5rb.isSelected()) return 5;
+        return 1;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    // file writing
+    private void writeScore(String playerName, int score) {
+        String cleanName = playerName.trim().replace(",", " ").replace(":", " ");
+        List<String[]> entries = readAllFromFile();
+
+        // placeholder functions muna cos collision logic is wala pa
+        // adds names to the first index
         entries.add(0, new String[]{cleanName, String.valueOf(score)});
 
-        // Not placeholder functions from here
-        // Sorts scores
+        // sorts scores descending
         entries.sort((a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
 
-        // Limit at 100 entries
+        // limit at 100 entries
         if (entries.size() > maxEntries) {
             entries = new ArrayList<>(entries.subList(0, maxEntries));
         }
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(leaderboardFile))) {
-            for (String[] entry: entries) {
+            for (String[] entry : entries) {
                 bw.write(entry[0] + "," + entry[1]);
                 bw.newLine();
             }
         } catch (IOException e) {
             System.err.println("Error writing leaderboard: " + e.getMessage());
         }
-
     }
 
-    // File reading
+    // file reading with column-count and NumberFormatException guards
     private List<String[]> readAllFromFile() {
         List<String[]> entries = new ArrayList<>();
         File file = new File(leaderboardFile);
@@ -242,23 +267,33 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
         try (BufferedReader br = new BufferedReader(new FileReader(leaderboardFile))) {
             String line;
-            while((line = br.readLine()) != null) {
-                int comma = line.lastIndexOf(',');
-                if (comma > 0) {
-                    entries.add(new String[]{
-                            line.substring(0, comma).trim(),
-                            line.substring(comma + 1).trim()
-                    });
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                // Support both comma-separated (2, 3, or 4 columns) and legacy "Name: Score" lines
+                String[] parts = line.contains(",") ? line.split(",") : line.split(":");
+                if (parts.length < 2) continue;
+
+                String name = parts[0].trim();
+                String scoreStr = parts[1].trim();
+                if (name.isEmpty()) continue;
+
+                try {
+                    int parsedScore = Integer.parseInt(scoreStr);
+                    entries.add(new String[]{name, String.valueOf(parsedScore)});
+                } catch (NumberFormatException ignored) {
+                    // Skip header lines or malformed rows safely
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error writing leaderboard: " + e.getMessage());
+            System.err.println("Error reading leaderboard: " + e.getMessage());
         }
 
         return entries;
     }
 
-    // Reads top 10
+    // reads top 10
     private void loadTop10() {
         File file = new File(leaderboardFile);
         if (!file.exists()) {
@@ -270,9 +305,14 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         List<String[]> all = readAllFromFile();
         for (int i = 0; i < 10; i++) {
             if (i < all.size()) {
-                model.addRow(new Object[]{i + 1, all.get(i)[0], Integer.parseInt(all.get(i)[1])});
+                try {
+                    int score = Integer.parseInt(all.get(i)[1]);
+                    model.addRow(new Object[]{i + 1, all.get(i)[0], score});
+                } catch (NumberFormatException e) {
+                    model.addRow(new Object[]{"", "", ""});
+                }
             } else {
-                model.addRow(new Object[]{i + 1, "", ""});
+                model.addRow(new Object[]{"", "", ""});
             }
         }
 
@@ -359,8 +399,12 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         int rows = leaderboardTbl.getRowCount();
         int availableHeight = viewport.getHeight();
         if (rows > 0 && availableHeight > 0) {
-            int rowHeight = Math.max(28, availableHeight / rows);
-            leaderboardTbl.setRowHeight(rowHeight);
+            int baseHeight = Math.max(28, availableHeight / rows);
+            int remainder = availableHeight - (baseHeight * rows);
+            leaderboardTbl.setRowHeight(baseHeight);
+            if (remainder > 0) {
+                leaderboardTbl.setRowHeight(rows - 1, baseHeight + remainder);
+            }
         }
     }
 
@@ -379,18 +423,27 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
     }
 
     private BufferedImage loadSyncScaledImage(String path, int w, int h) {
-        URL url = getClass().getResource(path);
-        if (url == null) return null;
+        try {
+            URL url = getClass().getResource(path);
+            if (url == null) {
+                throw new FileNotFoundException(path + " not found");
+            }
 
-        Image img = new ImageIcon(url).getImage();
-        if (img == null || img.getWidth(null) <= 0) return null;
+            Image img = new ImageIcon(url).getImage();
+            if (img == null || img.getWidth(null) <= 0) {
+                throw new IllegalArgumentException("Failed to decode image: " + path);
+            }
 
-        BufferedImage scaled = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = scaled.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g2.drawImage(img, 0, 0, w, h, null);
-        g2.dispose();
-        return scaled;
+            BufferedImage scaled = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = scaled.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            g2.drawImage(img, 0, 0, w, h, null);
+            g2.dispose();
+            return scaled;
+        } catch (Exception e) {
+            System.err.println("Error loading image " + path + ": " + e.getMessage());
+            return null;
+        }
     }
 
     private void styleCreamCardPanel(JPanel panel, int topInset) {
@@ -431,7 +484,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         Object source = e.getSource();
 
         if (source == playButton) {
-            String playerName = tfName.getText().trim();
+            String playerName = getPlayerName();
 
             if (playerName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter your name!", "Missing Name", JOptionPane.WARNING_MESSAGE);
@@ -439,6 +492,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
                 return;
             }
 
+            started = true;
             writeScore(playerName, 20);
             loadTop10();
             dispose();
@@ -492,7 +546,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         int baselineY = pad + fm.getAscent();
         gDummy.dispose();
 
-        // 1. Draw the raw font outlines (1px dark lines)
+        // draw the raw font outlines
         BufferedImage outlineImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gOut = outlineImg.createGraphics();
         gOut.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
@@ -501,7 +555,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         gOut.drawString(text, pad, baselineY);
         gOut.dispose();
 
-        // 2. Flood-fill from (0,0) to mark all exterior background pixels
+        // flood-fill from (0,0) to mark all exterior background pixels
         boolean[][] outside = new boolean[w][h];
         ArrayDeque<Point> queue = new ArrayDeque<>();
         queue.add(new Point(0, 0));
@@ -524,7 +578,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
             }
         }
 
-        // 3. Create solid white interior mask
+        // create solid white interior mask
         BufferedImage whiteInterior = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         int whiteRGB = Color.WHITE.getRGB();
         for (int px = 0; px < w; px++) {
@@ -535,11 +589,11 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
             }
         }
 
-        // 4. Composite in exact layer order
+        // composite in exact layer order
         BufferedImage finalImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = finalImg.createGraphics();
 
-        // Layer A (Back): Thin bottom-only drop-shadow
+        // layer a (Back): thin bottom-only drop-shadow
         BufferedImage darkShadow = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         int darkRGB = new Color(55, 48, 56).getRGB();
         for (int px = 0; px < w; px++) {
@@ -553,10 +607,10 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
             g2.drawImage(darkShadow, 0, dy, null);
         }
 
-        // Layer B (Middle): Solid white fill inside the letters
+        // layer b (Middle): solid white fill inside the letters
         g2.drawImage(whiteInterior, 0, 0, null);
 
-        // Layer C (Front): Crisp dark inner dividing lines separating each letter
+        // layer c (Front): crisp dark inner dividing lines separating each letter
         g2.drawImage(outlineImg, 0, 0, null);
 
         g2.dispose();
@@ -565,11 +619,6 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
     public static void main(String[] args) {
         StartLeaderboardDialog app = new StartLeaderboardDialog();
-        app.setContentPane(app.pnlMain);
-        app.setTitle("Flappy Birb");
-        app.pack();
-        app.setLocationRelativeTo(null);
-        app.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         app.setVisible(true);
     }
 }
