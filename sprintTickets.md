@@ -78,7 +78,7 @@ The development roadmap follows our agreed architectural design:
 * **Package Target:** `data.LeaderboardManager`, `flapibirb.model`
 * **Description:** Save and load high scores to a local file (`assets/data/leaderboard.txt`).
 * **Acceptance Criteria:**
-  - [ ] Flat text format: `playerName,score,birdType,date`.
+  - [x] Flat text format: `playerName,score,birdType,date`.
   - [x] Reads file on startup using `BufferedReader` and populates the leaderboard table.
   - [ ] Appends new scores upon Game Over using `BufferedWriter`.
   - [ ] Sorts scores in descending order (`ScoreEntry` implements `Comparable<ScoreEntry>`).
