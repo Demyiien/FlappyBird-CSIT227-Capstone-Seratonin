@@ -81,7 +81,7 @@ The development roadmap follows our agreed architectural design:
   - [x] Reads file on startup using `BufferedReader` and populates the leaderboard table.
   - [ ] Appends new scores upon Game Over using `BufferedWriter`.
   - [ ] Sorts scores in descending order (`ScoreEntry` implements `Comparable<ScoreEntry>`).
-  - [ ] Auto-creates the data directory and file if it does not exist yet.
+  - [ ] Auto-creates the git data directory and file if it does not exist yet.
 
 #### TICK-07: In-Game Scoreboard & HUD Integration
 * **Package Target:** `flapibirb.view`
