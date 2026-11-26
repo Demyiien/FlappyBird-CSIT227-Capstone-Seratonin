@@ -12,13 +12,27 @@ A cell-based Flappy Bird game built with **Java Swing** and `JTable` for the CSI
 
 ## Capstone Project
 
-The team is developing a desktop Flappy Bird game in Java. The playfield is represented as a cell-based grid, with a bird controlled by keyboard input and pipes that form moving obstacles. The planned game flow includes a start dialog for player name and bird selection, collision-triggered game over, score tracking, and a persistent leaderboard.
+The team is developing a desktop Flappy Bird game in Java. The playfield is represented as a cell-based grid, with a bird controlled by keyboard input and pipes that form moving obstacles. The game flow includes a start dialog for player name and bird selection, collision-triggered game over, score tracking, and a persistent leaderboard.
 
 The project is organized around a modular object-oriented design, separating game models, presentation, control logic, data persistence, and custom exceptions. The sprint backlog records the implementation scope and acceptance criteria for each feature.
 
 ## Class Diagram
 
 ![Flappy Bird capstone class diagram](assets/classdiagram/flappybird.png)
+
+## Architecture & Design Patterns
+
+The project incorporates creational and structural design patterns to promote code reusability, maintainability, and separation of concerns.
+
+### Creational Design Pattern
+
+- **Singleton (`GameInstance`):** Ensures that only one instance of the `StartLeaderboardDialog` and `Game` windows is created and managed throughout the application. The class uses a private constructor to prevent external instantiation and static methods (`getInstanceOfSLD()` and `getInstanceOfGame()`) to provide controlled access to these instances. This avoids unnecessary window creation and centralizes instance management.
+
+### Structural Design Patterns
+
+- **Facade (`flapibirb.controller.GameFacade`):** Provides a unified entry point through methods such as `startSession()`, `endSession(int score)`, and `preloadSounds()`. It coordinates the `StartLeaderboardDialog`, `Game` window, `SoundManager`, and leaderboard score persistence, allowing the `Main` class to interact with these subsystems without depending on their individual implementations.
+
+- **[Second Structural Pattern]:** [Add the pattern name, implementing class, and a brief explanation of how it simplifies or organizes interactions between components.]
 
 ## Requirements
 
