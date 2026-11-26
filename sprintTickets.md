@@ -8,8 +8,8 @@ The development roadmap follows our agreed architectural design:
 
 ### Ticket Summary Board
 
-| Ticket ID | Title | Module / Package | Priority | Status |
-| :--- | :--- | :--- | :--- | :--- |
+| Ticket ID   | Title | Module / Package | Priority | Status |
+|:------------| :--- | :--- | :--- | :--- |
 | **TICK-00** | Grid & Bird Renderer Baseline | `view` | High | ✅ Done (Josh) |
 | **TICK-01** | Modular OOP Architecture Setup | `model`, `controller` | High | ✅ Done (TJ) |
 | **TICK-02** | Bird Physics & Jump Mechanics | `model`, `controller` | High | ✅ Done (Josh) |
@@ -17,9 +17,8 @@ The development roadmap follows our agreed architectural design:
 | **TICK-04** | Collision Detection & Game Flow Trigger | `controller` | High | 📝 Ready for Dev (Name) |
 | **TICK-05** | Unified Start / Leaderboard / Bird Select Dialog | `view`, `model` | High | 🚧 In Progress (Liyah) |
 | **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 🚧 In Progress (Liyah) |
-| **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
-| **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 🚧 In Progress (Trin) |
-| **TICK-09** | Sound Effects & Audio Manager (Optional) | `flapibirb.controller` | Low | ✅ Done (Josh) |
+| **TICK-07** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 🚧 In Progress (Trin) |
+| **TICK-08** | Sound Effects & Audio Manager (Optional) | `flapibirb.controller` | Low | ✅ Done (Josh) |
 
 ---
 
@@ -84,25 +83,14 @@ The development roadmap follows our agreed architectural design:
   - [ ] Sorts scores in descending order (`ScoreEntry` implements `Comparable<ScoreEntry>`).
   - [ ] Auto-creates the data directory and file if it does not exist yet.
 
-#### TICK-07: Custom Exception Hierarchy & Input Defense
-* **Package Target:** `exception.*`
-* **Description:** OOP custom exception classes to handle invalid inputs, corrupted data, and missing files gracefully.
-* **Acceptance Criteria:**
-  - [ ] `GameException` (base custom checked/unchecked exception).
-  - [ ] `InvalidPlayerNameException` (thrown if name is empty, too short, or has invalid characters).
-  - [ ] `LeaderboardDataException` (thrown if a line in the data file cannot be parsed).
-  - [ ] `AssetNotFoundException` (thrown if sprites or background images fail to load).
-  - [ ] All file streams enclosed in `try-with-resources`.
-  - [ ] User-friendly error messages presented via `JOptionPane`.
-
-#### TICK-08: In-Game Scoreboard & HUD Integration
+#### TICK-07: In-Game Scoreboard & HUD Integration
 * **Package Target:** `flapibirb.view`
 * **Description:** Display real-time score overlay while playing.
 * **Acceptance Criteria:**
   - [ ] Point scored when a pipe safely clears the bird's horizontal columns.
   - [x] Retro-style score display overlay at top-center.
 
-#### TICK-09: Sound Effects & Audio Manager (Optional)
+#### TICK-08: Sound Effects & Audio Manager (Optional)
 * **Package Target:** `flapibirb.controller.SoundManager`
 * **Description:** Background music and sound effects for jumps, score increments, and collisions.
 * **Acceptance Criteria:**
