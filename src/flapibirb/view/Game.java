@@ -33,7 +33,6 @@ public class Game extends JFrame {
     private GameTime gameTime;
     private final Timer scoreTimer;
 
-    private boolean dead = false;
 
     public Game() {
         loadScoreFont();
@@ -70,7 +69,7 @@ public class Game extends JFrame {
                 JLabel cell = (JLabel) super.getTableCellRendererComponent(
                         table, value, isSelected, hasFocus, row, column);
 
-                // Clear cell defaults so previous icons don't repeat on empty cells
+                // clear cell defaults so previous icons don't repeat on empty cells
                 cell.setOpaque(false);
                 cell.setBackground(new Color(0, 0, 0, 0));
                 cell.setBorder(null);
@@ -79,7 +78,7 @@ public class Game extends JFrame {
 
                 int worldCol = column + getCameraX();
 
-                // Layer order: BGPhoto (mainPanel) -> Pipe -> Bird
+                // layer order: BGPhoto (mainPanel) -> Pipe -> Bird
                 birdLayerIcon = bird.getIconAt(new Point(worldCol, row));
                 pipeLayerIcon = null;
                 for (Pipe pipe : pipes) {
@@ -105,7 +104,7 @@ public class Game extends JFrame {
             }
         });
 
-        // Wait for the first jump key press to start GameTime & scoreboard, and require key release between jumps
+        // wait for the first jump key press to start GameTime & scoreboard, and require key release between jumps
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
             int code = e.getKeyCode();
             if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
@@ -242,13 +241,6 @@ public class Game extends JFrame {
         pipes.add(new Pipe(cols + 1 + getCameraX(), rows, cellSize));
     }
 
-    public boolean isDead() {
-        return dead;
-    }
-
-    public void die() {
-        dead = true;
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
