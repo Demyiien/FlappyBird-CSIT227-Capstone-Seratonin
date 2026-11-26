@@ -20,6 +20,20 @@ The project is organized around a modular object-oriented design, separating gam
 
 ![Flappy Bird capstone class diagram](assets/classdiagram/flappybird.png)
 
+## Architecture & Design Patterns
+
+The project incorporates creational and structural design patterns to promote code reusability, maintainability, and separation of concerns.
+
+### Creational Design Pattern
+
+- **Singleton (`GameInstance`):** Ensures that only one instance of the `StartLeaderboardDialog` and `Game` windows is created and managed throughout the application. The class uses a private constructor to prevent external instantiation and static methods (`getInstanceOfSLD()` and `getInstanceOfGame()`) to provide controlled access to these instances. This avoids unnecessary window creation and centralizes instance management.
+
+### Structural Design Patterns
+
+- **Facade (`flapibirb.controller.GameFacade`):** Provides a unified entry point through methods such as `startSession()`, `endSession(int score)`, and `preloadSounds()`. It coordinates the `StartLeaderboardDialog`, `Game` window, `SoundManager`, and leaderboard score persistence, allowing the `Main` class to interact with these subsystems without depending on their individual implementations.
+
+- **Decorator (In Development):** Currently being implemented to extend existing game components with additional behavior dynamically without modifying their original classes. This pattern will allow new features or functionalities to be added through decorator classes while preserving the existing component structure.
+  
 ## Requirements
 
 - **JDK 21**
