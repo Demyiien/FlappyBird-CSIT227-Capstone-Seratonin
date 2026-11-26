@@ -14,7 +14,7 @@ A cell-based Flappy Bird game built with **Java Swing** and `JTable` for the CSI
 
 The team is developing a desktop Flappy Bird game in Java. The playfield is represented as a cell-based grid, with a bird controlled by keyboard input and pipes that form moving obstacles. The planned game flow includes a start dialog for player name and bird selection, collision-triggered game over, score tracking, and a persistent leaderboard.
 
-The project is organized around a modular object-oriented design, separating game models, presentation, control logic, data persistence, and custom exceptions. The sprint backlog records the implementation scope and acceptance criteria for each feature.
+The project is organized around a modular object-oriented design, separating game models, presentation, control logic, and data persistence. The sprint backlog records the implementation scope and acceptance criteria for each feature.
 
 ## Class Diagram
 

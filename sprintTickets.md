@@ -2,9 +2,9 @@
 
 The development roadmap follows our agreed architectural design:
 1. **Modal Popup System:** A unified popup dialog for Start / Game Over containing player name input + bird selector on the left, and the live leaderboard on the right.
-2. **Modular OOP Architecture:** Clean separation across `model`, `view`, `controller`, `data`, and `exception` packages.
+2. **Modular OOP Architecture:** Clean separation across `model`, `view`, `controller`, and `data` packages.
 3. **Pipe Sprite Slicing & Continuous Scrolling:** Slicing pipe assets (`pipe-tip.png` and `pipe-hose.png`) into cell-sized icons and continuously scrolling pipes leftward.
-4. **Data Persistence:** Flat text file storage (`assets/data/leaderboard.txt`) using streams and custom exceptions.
+4. **Data Persistence:** Flat text file storage (`assets/data/leaderboard.txt`) using file streams.
 
 ### Ticket Summary Board
 
@@ -25,7 +25,7 @@ The development roadmap follows our agreed architectural design:
 ### Detailed Sprint Tickets
 
 #### TICK-01: Modular OOP Architecture Setup
-* **Package Target:** `flapibirb.model`, `flapibirb.view`, `flapibirb.controller`, `flapibirb.data`, `flapibirb.exception`
+* **Package Target:** `flapibirb.model`, `flapibirb.view`, `flapibirb.controller`, `flapibirb.data`
 * **Description:** Refactor current standalone screen into modular classes so each responsibility is clean and testable.
 * **Acceptance Criteria:**
   - [x] Package structure created under `src/`.

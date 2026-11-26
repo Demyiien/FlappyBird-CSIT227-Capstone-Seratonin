@@ -14,8 +14,11 @@ public class SoundManager {
         try (AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(path))) {
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
-            clips.put(name, clip);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            Clip previous = clips.put(name, clip);
+            if (previous != null) {
+                previous.close();
+            }
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | IllegalArgumentException e) {
             System.err.println("Could not load sound (" + path + "): " + e.getMessage());
         }
     }

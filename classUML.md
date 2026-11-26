@@ -312,17 +312,31 @@ Attributes:
 - leaderboardTbl: JTable
 - imgUrl: URL
 - backgroundImage: Image
+- bannerFont: Font
+- cachedBannerImg: BufferedImage
+- cachedBannerBirdImg: BufferedImage
 - birbGroup: ButtonGroup
+- started: boolean
 ```
 
 Constructors and Methods:
 ```text
 + StartLeaderboardDialog()
 + getPlayerName(): String
-+ getSelectedBirb(): String
-- loadLeaderboard(DefaultTableModel): void
++ getSelectedBirb(): int
++ isStarted(): boolean
+- writeScore(String, int): void
+- readAllFromFile(): List<String[]>
+- loadTop10(): void
+- setupBirbOption(JRadioButton, String, String): void
+- createBirbBadgeIcon(BufferedImage, boolean): Icon
+- fitRowsToViewport(JViewport): void
+- loadCustomFont(String, float): Font
+- loadSyncScaledImage(String, int, int): BufferedImage
+- styleCreamCardPanel(JPanel, int): void
 + actionPerformed(ActionEvent): void
 - createUIComponents(): void
+- createSolidFlappyBanner(String, Font): BufferedImage
 + main(String[]): void
 ```
 
