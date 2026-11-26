@@ -12,7 +12,7 @@ A cell-based Flappy Bird game built with **Java Swing** and `JTable` for the CSI
 
 ## Capstone Project
 
-The team is developing a desktop Flappy Bird game in Java. The playfield is represented as a cell-based grid, with a bird controlled by keyboard input and pipes that form moving obstacles. The game flow includes a start dialog for player name and bird selection, collision-triggered game over, score tracking, and a persistent leaderboard.
+The team is developing a desktop Flappy Bird game in Java. The playfield is represented as a cell-based grid, with a bird controlled by keyboard input and pipes that form moving obstacles. The planned game flow includes a start dialog for player name and bird selection, collision-triggered game over, score tracking, and a persistent leaderboard.
 
 The project is organized around a modular object-oriented design, separating game models, presentation, control logic, data persistence, and custom exceptions. The sprint backlog records the implementation scope and acceptance criteria for each feature.
 
@@ -33,7 +33,7 @@ The project incorporates creational and structural design patterns to promote co
 - **Facade (`flapibirb.controller.GameFacade`):** Provides a unified entry point through methods such as `startSession()`, `endSession(int score)`, and `preloadSounds()`. It coordinates the `StartLeaderboardDialog`, `Game` window, `SoundManager`, and leaderboard score persistence, allowing the `Main` class to interact with these subsystems without depending on their individual implementations.
 
 - **Decorator (In Development):** Currently being implemented to extend existing game components with additional behavior dynamically without modifying their original classes. This pattern will allow new features or functionalities to be added through decorator classes while preserving the existing component structure.
-
+  
 ## Requirements
 
 - **JDK 21**
