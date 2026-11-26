@@ -19,7 +19,7 @@ The development roadmap follows our agreed architectural design:
 | **TICK-06** | Leaderboard File Handling & Persistence | `data`, `model` | High | 🚧 In Progress (Liyah) |
 | **TICK-07** | Custom Exception Hierarchy & Input Defense | `exception` | High | 📝 Ready for Dev (Name) |
 | **TICK-08** | In-Game Scoreboard & HUD Integration | `view`, `controller` | Medium | 🚧 In Progress (Trin) |
-| **TICK-09** | Sound Effects & Audio Manager (Optional) | `audio` | Low | 🚧 In Progress (Josh) |
+| **TICK-09** | Sound Effects & Audio Manager (Optional) | `flapibirb.controller` | Low | ✅ Done (Josh) |
 
 ---
 
@@ -103,9 +103,9 @@ The development roadmap follows our agreed architectural design:
   - [x] Retro-style score display overlay at top-center.
 
 #### TICK-09: Sound Effects & Audio Manager (Optional)
-* **Package Target:** `audio.SoundManager`
+* **Package Target:** `flapibirb.controller.SoundManager`
 * **Description:** Background music and sound effects for jumps, score increments, and collisions.
 * **Acceptance Criteria:**
-  - [ ] Jump wing flap sound.
-  - [ ] Point score sound.
-  - [ ] Collision / hit sound.
+  - [x] Jump wing flap sound.
+  - [x] Point score sound.
+  - [x] Collision / hit sound.

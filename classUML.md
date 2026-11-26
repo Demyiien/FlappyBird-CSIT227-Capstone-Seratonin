@@ -17,6 +17,7 @@ Visibility: `+` public, `-` private, `#` protected
 - `Game` has `Bird`, `Pipe` (list), `Point` (`cameraPos`), `Scoreboard`, and `GameTime`
 - `GameTime` references `Game` and `Bird`
 - `Game` creates `CoolBird` and `Pipe`
+- `Game` and `Bird` use `SoundManager`
 
 ---
 
@@ -59,6 +60,26 @@ Constructors and Methods:
 + start(): void
 + isRunning(): boolean
 + stop(): void
+```
+
+---
+
+### SoundManager
+
+Header:
+```text
+SoundManager
+```
+
+Attributes:
+```text
+- clips: Map<String, Clip>
+```
+
+Constructors and Methods:
+```text
++ load(String, String): void
++ play(String): void
 ```
 
 ---
