@@ -24,33 +24,23 @@ public class GameTime {
                 if (ticks % 7 == 0) {
                     bird.setCol(bird.getCol() + 1);
                     game.setCameraX(game.getCameraX() + 1);
-
-                    if (!game.isDead()) {
-                        if ((int) bird.getPos().y == rows - 2) {
-                            System.out.println("dead");
-                            game.die();
-                        } else if (!game.getPipes().isEmpty()) {
-                            for (Pipe i : game.getPipes()) {
-                                if (i.inPipe(bird.getPos().x, bird.getPos().y, 2, 2)) game.die();
-                            }
-                        }
-                    }
-                    else {
-                        bird.jump();
-                    }
                 }
                 if (ticks % 125 == 0) {
                     game.addPipe();
                 }
-            }
 
-            // System.out.println("dead = " + game.isDead());
-            /* for (Pipe i: game.getPipes()) {
-                if (i.inPipe(bird.getPos().x, bird.getPos().y, 2, 2) && game.isDead() == 0) {
-                    game.toggleDead();
-                    break;
+                // check floor and pipe collisions every tick so fast falls don't skip past
+                if (bird.getPos().y >= rows - 2) {
+                    bird.die();
+                } else {
+                    for (Pipe pipe : game.getPipes()) {
+                        if (pipe.inPipe(bird.getPos().x, bird.getPos().y, 2, 2)) {
+                            bird.die();
+                            break;
+                        }
+                    }
                 }
-            } */
+            }
 
             table.repaint();
             ticks++;

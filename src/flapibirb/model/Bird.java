@@ -17,7 +17,7 @@ public abstract class Bird implements GObject {
 
     private static final double JUMP_VELOCITY = -1.03;
     private static final double DEFAULT_GRAVITY = 0.11;
-    private static final double MAX_FALL_VELOCITY = 0.50;
+    private static final double MAX_FALL_VELOCITY = 1.30;
 
     private static final double JUMP_UP_ANGLE = -25.0;
     private static final double MAX_FALL_ANGLE = 90.0;
