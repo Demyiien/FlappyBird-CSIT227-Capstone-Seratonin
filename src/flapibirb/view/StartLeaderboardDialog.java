@@ -1,16 +1,17 @@
 package flapibirb.view;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.border.*;
+import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
+import java.awt.event.*;
+import java.awt.geom.*;
+import java.awt.image.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
@@ -29,220 +30,153 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
     private JLabel leaderboardLabel;
     private JTable leaderboardTbl;
 
-    // pnlMain bg fields
+    // palette
+    private static final Color CARD_CREAM = new Color(246, 243, 235);
+    private static final Color BORDER_NAVY = new Color(36, 52, 92);
+    private static final Color SELECT_GOLD_BG = new Color(255, 238, 175);
+    private static final Color GOLD_BTN = new Color(247, 195, 37);
+    private static final Color TBL_HEADER_BG = new Color(184, 196, 245);
+    private static final Color ROW_EVEN = new Color(239, 236, 228);
+    private static final Color ROW_ODD = new Color(230, 226, 216);
+
+    // pnlMain bg & banner fields
     private final URL imgUrl = getClass().getResource("/blueBG.jpg");
     private final Image backgroundImage = (imgUrl != null) ? new ImageIcon(imgUrl).getImage() : null;
+    private Font bannerFont;
+    private BufferedImage cachedBannerImg;
+    private BufferedImage cachedBannerBirdImg;
 
     // ButtonGroup so only one can be picked at a time
     private ButtonGroup birbGroup;
+    private boolean started = false;
+
+    // for file handling
+    private static final String leaderboardFile = "leaderboard.txt";
+    private static final int maxEntries = 100;
 
     public StartLeaderboardDialog() {
+        // load FlappyBirdy.ttf for the big top sign and PressStart2P-Regular.ttf for all UI text
+        bannerFont = loadCustomFont("/FlappyBirdy.ttf", 105f);
+        Font titleFont = loadCustomFont("/PressStart2P-Regular.ttf", 18f);
+        Font labelFont = loadCustomFont("/PressStart2P-Regular.ttf", 15f);
+        Font buttonFont = loadCustomFont("/PressStart2P-Regular.ttf", 16f);
+        Font inputFont = loadCustomFont("/PressStart2P-Regular.ttf", 13f);
+        Font tableHeaderFont = loadCustomFont("/PressStart2P-Regular.ttf", 12f);
+        Font tableBodyFont = loadCustomFont("/PressStart2P-Regular.ttf", 11f);
 
-        // adding birb radioButtons to birbGroup ButtonGroup
+        // pre-render the solid white "FlappyBirb" sign and bird sprite synchronously
+        cachedBannerImg = createSolidFlappyBanner("FlappyBirb", bannerFont);
+        cachedBannerBirdImg = loadSyncScaledImage("/flappy-icon.png", 68, 68);
+
+        // initialize birbGroup ButtonGroup
         birbGroup = new ButtonGroup();
         birbGroup.add(birb1rb);
         birbGroup.add(birb2rb);
         birbGroup.add(birb3rb);
         birbGroup.add(birb4rb);
         birbGroup.add(birb5rb);
+
+        // setup birb radio buttons with custom badge icons
+        setupBirbOption(birb1rb, "/flappy-icon.png", "/liyahBird.png");
+        setupBirbOption(birb2rb, "/flappy-icon.png", "/liyahBird.png");
+        setupBirbOption(birb3rb, "/flappy-icon.png", "/liyahBird.png");
+        setupBirbOption(birb4rb, "/flappy-icon.png", "/liyahBird.png");
+        setupBirbOption(birb5rb, "/flappy-icon.png", "/liyahBird.png");
+
+        // default selection so a birb is always chosen
         birb1rb.setSelected(true);
 
-        // changing birb1 icon to photo:
-        try {
-            // load & resize the UNSELECTED image
-            URL url1 = getClass().getResource("/flappy-icon.png");
-            if (url1 == null) {
-                throw new FileNotFoundException("flappy-icon.png not found");
-            }
-            ImageIcon originalbirb1Icon = new ImageIcon(url1);
-            Image scaledImage1 = originalbirb1Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb1rb.setIcon(new ImageIcon(scaledImage1));
+        // add top padding so the big [FlappyBirb + Bird] banner sits cleanly above both panels
+        pnlMain.setBorder(new EmptyBorder(125, 30, 25, 30));
 
-            // load & resize the SELECTED image
-            URL selectedUrl1 = getClass().getResource("/liyahBird.png");
-            if (selectedUrl1 == null) {
-                throw new FileNotFoundException("liyahBird.png not found");
-            }
-            ImageIcon originalSelected1 = new ImageIcon(selectedUrl1);
-            Image scaledSelected1 = originalSelected1.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb1rb.setSelectedIcon(new ImageIcon(scaledSelected1));
-        } catch (Exception e) {
-            System.err.println("Error loading birb1: " + e.getMessage());
-        }
-        birb1rb.setText("");
-        birb1rb.setOpaque(false);
+        // style startPnl & leaderboardPnl with clean rounded corners
+        styleCreamCardPanel(startPnl, 16);
+        styleCreamCardPanel(leaderboardPnl, 10);
 
-        // changing birb2 icon to photo:
-        try {
-            // load & resize the UNSELECTED image
-            URL url2 = getClass().getResource("/flappy-icon.png");
-            if (url2 == null) {
-                throw new FileNotFoundException("flappy-icon.png not found");
-            }
-            ImageIcon originalbirb2Icon = new ImageIcon(url2);
-            Image scaledImage2 = originalbirb2Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb2rb.setIcon(new ImageIcon(scaledImage2));
+        // style labels and text field with PressStart2P
+        nameLabel.setFont(labelFont);
+        nameLabel.setForeground(BORDER_NAVY);
 
-            // load & resize the SELECTED image
-            URL selectedUrl2 = getClass().getResource("/liyahBird.png");
-            if (selectedUrl2 == null) {
-                throw new FileNotFoundException("liyahBird.png not found");
-            }
-            ImageIcon originalSelected2 = new ImageIcon(selectedUrl2);
-            Image scaledSelected2 = originalSelected2.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb2rb.setSelectedIcon(new ImageIcon(scaledSelected2));
+        birbChoiceLabel.setFont(labelFont);
+        birbChoiceLabel.setForeground(BORDER_NAVY);
 
-        } catch (Exception e) {
-            System.err.println("Error loading birb2: " + e.getMessage());
-        }
-        birb2rb.setText("");
-        birb2rb.setOpaque(false);
+        leaderboardLabel.setFont(titleFont);
+        leaderboardLabel.setForeground(BORDER_NAVY);
+        leaderboardLabel.setBorder(new EmptyBorder(0, 0, 12, 0));
 
-        // changing birb3 icon to photo:
-        try {
-            // load & resize the UNSELECTED image
-            URL url3 = getClass().getResource("/flappy-icon.png");
-            if (url3 == null) {
-                throw new FileNotFoundException("flappy-icon.png not found");
-            }
-            ImageIcon originalbirb3Icon = new ImageIcon(url3);
-            Image scaledImage3 = originalbirb3Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb3rb.setIcon(new ImageIcon(scaledImage3));
+        tfName.setFont(inputFont);
+        tfName.setForeground(BORDER_NAVY);
+        tfName.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_NAVY, 2, true),
+                new EmptyBorder(10, 12, 10, 12)
+        ));
 
-            // load & resize the SELECTED image
-            URL selectedUrl3 = getClass().getResource("/liyahBird.png");
-            if (selectedUrl3 == null) {
-                throw new FileNotFoundException("liyahBird.png not found");
-            }
-            ImageIcon originalSelected3 = new ImageIcon(selectedUrl3);
-            Image scaledSelected3 = originalSelected3.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb3rb.setSelectedIcon(new ImageIcon(scaledSelected3));
+        // style playButton as gold pill button with PressStart2P
+        playButton.setFont(buttonFont);
+        playButton.setBackground(GOLD_BTN);
+        playButton.setForeground(BORDER_NAVY);
+        playButton.setFocusPainted(false);
+        playButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        playButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_NAVY, 2, true),
+                new EmptyBorder(14, 24, 14, 24)
+        ));
 
-        } catch (Exception e) {
-            System.err.println("Error loading birb3: " + e.getMessage());
-        }
-        birb3rb.setText("");
-        birb3rb.setOpaque(false);
-
-        // changing birb4 icon to photo:
-        try {
-            // load & resize the UNSELECTED image
-            URL url4 = getClass().getResource("/flappy-icon.png");
-            if (url4 == null) {
-                throw new FileNotFoundException("flappy-icon.png not found");
-            }
-            ImageIcon originalbirb4Icon = new ImageIcon(url4);
-            Image scaledImage4 = originalbirb4Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb4rb.setIcon(new ImageIcon(scaledImage4));
-
-            // load & resize the SELECTED image
-            URL selectedUrl4 = getClass().getResource("/liyahBird.png");
-            if (selectedUrl4 == null) {
-                throw new FileNotFoundException("liyahBird.png not found");
-            }
-            ImageIcon originalSelected4 = new ImageIcon(selectedUrl4);
-            Image scaledSelected4 = originalSelected4.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb4rb.setSelectedIcon(new ImageIcon(scaledSelected4));
-
-        } catch (Exception e) {
-            System.err.println("Error loading birb4: " + e.getMessage());
-        }
-        birb4rb.setText("");
-        birb4rb.setOpaque(false);
-
-        // changing birb5 icon to photo:
-        try {
-            // load & resize the UNSELECTED image
-            URL url5 = getClass().getResource("/flappy-icon.png");
-            if (url5 == null) {
-                throw new FileNotFoundException("flappy-icon.png not found");
-            }
-            ImageIcon originalbirb5Icon = new ImageIcon(url5);
-            Image scaledImage5 = originalbirb5Icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb5rb.setIcon(new ImageIcon(scaledImage5));
-
-            // load & resize the SELECTED image
-            URL selectedUrl5 = getClass().getResource("/liyahBird.png");
-            if (selectedUrl5 == null) {
-                throw new FileNotFoundException("liyahBird.png not found");
-            }
-            ImageIcon originalSelected5 = new ImageIcon(selectedUrl5);
-            Image scaledSelected5 = originalSelected5.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            birb5rb.setSelectedIcon(new ImageIcon(scaledSelected5));
-
-        } catch (Exception e) {
-            System.err.println("Error loading birb5: " + e.getMessage());
-        }
-        birb5rb.setText("");
-        birb5rb.setOpaque(false);
-
-
-        // round borders for startPnl
-        startPnl.setOpaque(false);
-        startPnl.setBorder(new javax.swing.border.AbstractBorder() {
+        // leaderboard table setup (Rank, Name, Score — all centered!)
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Rank", "Name", "Score"}, 0) {
             @Override
-            public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-                // temporary Graphics2D copy so our settings (color/stroke) don't bleed into other UI elements
-                Graphics2D g2 = (Graphics2D) g.create();
-                // enable Anti-Aliasing to smooth out pixelated edges on the rounded corners
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // fill rounded bg
-                g2.setColor(new Color(56,113,225));
-                g2.fillRoundRect(0, 0, w - 1, h - 1, 20, 20);
-
-                // draw border
-                g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, w - 2, h - 2, 20, 20);
-
-                // release system graphics resources immediately after drawing
-                g2.dispose();
-
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
+        };
+        leaderboardTbl.setModel(model);
 
+        loadTop10();
+
+        leaderboardTbl.setFont(tableBodyFont);
+        leaderboardTbl.setShowGrid(false);
+        leaderboardTbl.setIntercellSpacing(new Dimension(0, 0));
+        leaderboardTbl.setForeground(BORDER_NAVY);
+        leaderboardTbl.setBackground(ROW_ODD);
+        leaderboardTbl.setFillsViewportHeight(true);
+
+        JTableHeader header = leaderboardTbl.getTableHeader();
+        header.setBackground(TBL_HEADER_BG);
+        header.setForeground(BORDER_NAVY);
+        header.setFont(tableHeaderFont);
+        header.setPreferredSize(new Dimension(0, 38));
+        header.setReorderingAllowed(false);
+
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
             @Override
-            public Insets getBorderInsets(Component c) {
-                 return new Insets(10, 10, 10, 10);
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                           boolean hasFocus, int row, int column) {
+                JLabel lbl = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                lbl.setFont(tableBodyFont);
+                lbl.setForeground(BORDER_NAVY);
+                lbl.setBackground(row % 2 == 0 ? ROW_EVEN : ROW_ODD);
+                lbl.setHorizontalAlignment(SwingConstants.CENTER);
+                return lbl;
+            }
+        };
 
+        for (int i = 0; i < leaderboardTbl.getColumnCount(); i++) {
+            leaderboardTbl.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+        }
+
+        // stretch the 10 rows dynamically to fill 100% of the scroll pane height
+        SwingUtilities.invokeLater(() -> {
+            Container parent = leaderboardTbl.getParent();
+            if (parent instanceof JViewport) {
+                fitRowsToViewport((JViewport) parent);
+                parent.addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        fitRowsToViewport((JViewport) parent);
+                    }
+                });
             }
         });
-
-
-        // round borders for leaderboard
-        leaderboardPnl.setOpaque(false);
-        leaderboardPnl.setBorder(new javax.swing.border.AbstractBorder() {
-            @Override
-            public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                g2.setColor(new Color(56,113,225));
-                g2.fillRoundRect(0, 0, w - 1, h - 1, 20, 20);
-
-                g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, w - 2, h - 2, 20, 20);
-
-                g2.dispose();
-            }
-
-            @Override
-            public Insets getBorderInsets(Component c) {
-                return new Insets(10, 10, 10, 10);
-            }
-
-        });
-
-        // edit playButton label
-        playButton.setFont(new Font("JetBrains Mono ExtraLight", Font.BOLD, 18));
-
-        // leaderboard table stuff
-        DefaultTableModel birbTablemodel = (DefaultTableModel) leaderboardTbl.getModel();
-        birbTablemodel.addColumn("Rank");
-        birbTablemodel.addColumn("Name");
-        birbTablemodel.addColumn("Score");
-        birbTablemodel.addColumn("Birb");
-
-        loadLeaderboard(birbTablemodel);
 
         tfName.setName("tfName");
         birb1rb.setName("birb1rb");
@@ -257,68 +191,315 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         leaderboardTbl.setName("leaderboardTbl");
 
         playButton.addActionListener(this);
+
+        // Configure dialog directly inside the constructor so callers (e.g., Game) get a ready modal dialog
+        setContentPane(pnlMain);
+        setTitle("Flappy Birb");
+        setModal(true);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                JOptionPane.showMessageDialog(
+                        StartLeaderboardDialog.this,
+                        "Please enter your name and click Start to play!",
+                        "Start Game Required",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                tfName.requestFocus();
+            }
+        });
+        pack();
+        setLocationRelativeTo(null);
     }
 
     public String getPlayerName() {
-        String playerName = tfName.getText().trim();
-        return playerName;
+        return tfName.getText().trim();
     }
 
-    public String getSelectedBirb() {
-        if (birb2rb.isSelected()) return "Birb 2";
-        if (birb3rb.isSelected()) return "Birb 3";
-        if (birb4rb.isSelected()) return "Birb 4";
-        if (birb5rb.isSelected()) return "Birb 5";
-        return "Birb 1";
-
+    public int getSelectedBirb() {
+        if (birb1rb.isSelected()) return 1;
+        if (birb2rb.isSelected()) return 2;
+        if (birb3rb.isSelected()) return 3;
+        if (birb4rb.isSelected()) return 4;
+        if (birb5rb.isSelected()) return 5;
+        return 1;
     }
 
+    public boolean isStarted() {
+        return started;
+    }
 
-    private void loadLeaderboard(DefaultTableModel model) {
-        File file = new File("leaderboard.txt");
-        if (!file.exists()) {
-            return;
+    // file writing
+    private void writeScore(String playerName, int score) {
+        String cleanName = playerName.trim().replace(",", " ").replace(":", " ");
+        List<String[]> entries = readAllFromFile();
+
+        // placeholder functions muna cos collision logic is wala pa
+        // adds names to the first index
+        entries.add(0, new String[]{cleanName, String.valueOf(score)});
+
+        // sorts scores descending
+        entries.sort((a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
+
+        // limit at 100 entries
+        if (entries.size() > maxEntries) {
+            entries = new ArrayList<>(entries.subList(0, maxEntries));
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            int rank = 1;
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(leaderboardFile))) {
+            for (String[] entry : entries) {
+                bw.write(entry[0] + "," + entry[1]);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing leaderboard: " + e.getMessage());
+        }
+    }
 
-            while ((line = br.readLine()) != null && rank <= 10) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    model.addRow(new Object[] {
-                            rank++,
-                            parts[0].trim(),
-                            Integer.parseInt(parts[1].trim()),
-                            parts[2].trim()
-                   });
+    // file reading with column-count and NumberFormatException guards
+    private List<String[]> readAllFromFile() {
+        List<String[]> entries = new ArrayList<>();
+        File file = new File(leaderboardFile);
+        if (!file.exists()) {
+            return entries;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(leaderboardFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                // Support both comma-separated (2, 3, or 4 columns) and legacy "Name: Score" lines
+                String[] parts = line.contains(",") ? line.split(",") : line.split(":");
+                if (parts.length < 2) continue;
+
+                String name = parts[0].trim();
+                String scoreStr = parts[1].trim();
+                if (name.isEmpty()) continue;
+
+                try {
+                    int parsedScore = Integer.parseInt(scoreStr);
+                    entries.add(new String[]{name, String.valueOf(parsedScore)});
+                } catch (NumberFormatException ignored) {
+                    // Skip header lines or malformed rows safely
                 }
             }
+        } catch (IOException e) {
+            System.err.println("Error reading leaderboard: " + e.getMessage());
+        }
 
-        } catch (IOException | NumberFormatException e) {
-            System.err.print("Error loading leaderboard: " + e.getMessage());
+        return entries;
+    }
+
+    // reads top 10
+    private void loadTop10() {
+        File file = new File(leaderboardFile);
+        if (!file.exists()) {
+            writeScore("Alliyah", 20);
+        }
+        DefaultTableModel model = (DefaultTableModel) leaderboardTbl.getModel();
+        model.setRowCount(0);
+
+        List<String[]> all = readAllFromFile();
+        for (int i = 0; i < 10; i++) {
+            if (i < all.size()) {
+                try {
+                    int score = Integer.parseInt(all.get(i)[1]);
+                    model.addRow(new Object[]{i + 1, all.get(i)[0], score});
+                } catch (NumberFormatException e) {
+                    model.addRow(new Object[]{"", "", ""});
+                }
+            } else {
+                model.addRow(new Object[]{"", "", ""});
+            }
+        }
+
+        Container parent = leaderboardTbl.getParent();
+        if (parent instanceof JViewport) {
+            fitRowsToViewport((JViewport) parent);
         }
     }
 
+    private void setupBirbOption(JRadioButton rb, String defaultPath, String selectedPath) {
+        BufferedImage defaultSprite = loadSyncScaledImage(defaultPath, 40, 40);
+        BufferedImage selectedSprite = loadSyncScaledImage(selectedPath, 40, 40);
+
+        rb.setText("");
+        rb.setOpaque(false);
+        rb.setContentAreaFilled(false);
+        rb.setFocusPainted(false);
+        rb.setBorder(new EmptyBorder(2, 2, 2, 2));
+        rb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        rb.setIcon(createBirbBadgeIcon(defaultSprite, false));
+        rb.setSelectedIcon(createBirbBadgeIcon(selectedSprite != null ? selectedSprite : defaultSprite, true));
+    }
+
+    private Icon createBirbBadgeIcon(BufferedImage sprite, boolean selected) {
+        int w = 52;
+        int h = 60;
+        return new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int badgeY = y + 10;
+                int badgeH = 48;
+
+                if (selected) {
+                    g2.setColor(SELECT_GOLD_BG);
+                    g2.fillRoundRect(x + 1, badgeY, w - 2, badgeH, 14, 14);
+
+                    g2.setColor(BORDER_NAVY);
+                    g2.setStroke(new BasicStroke(2f));
+                    g2.drawRoundRect(x + 1, badgeY, w - 2, badgeH, 14, 14);
+
+                    int midX = x + w / 2;
+                    Polygon arrow = new Polygon(
+                            new int[]{midX - 5, midX + 5, midX},
+                            new int[]{y + 1, y + 1, y + 7},
+                            3
+                    );
+                    g2.setColor(GOLD_BTN);
+                    g2.fillPolygon(arrow);
+                    g2.setColor(BORDER_NAVY);
+                    g2.setStroke(new BasicStroke(1.5f));
+                    g2.drawPolygon(arrow);
+                } else if (c instanceof AbstractButton && ((AbstractButton) c).getModel().isRollover()) {
+                    g2.setColor(new Color(36, 52, 92, 80));
+                    g2.setStroke(new BasicStroke(1.5f));
+                    g2.drawRoundRect(x + 1, badgeY, w - 2, badgeH, 14, 14);
+                }
+
+                if (sprite != null) {
+                    int spriteX = x + (w - sprite.getWidth()) / 2;
+                    int spriteY = badgeY + (badgeH - sprite.getHeight()) / 2;
+                    g2.drawImage(sprite, spriteX, spriteY, null);
+                }
+
+                g2.dispose();
+            }
+
+            @Override
+            public int getIconWidth() {
+                return w;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return h;
+            }
+        };
+    }
+
+    private void fitRowsToViewport(JViewport viewport) {
+        int rows = leaderboardTbl.getRowCount();
+        int availableHeight = viewport.getHeight();
+        if (rows > 0 && availableHeight > 0) {
+            int baseHeight = Math.max(28, availableHeight / rows);
+            int remainder = availableHeight - (baseHeight * rows);
+            leaderboardTbl.setRowHeight(baseHeight);
+            if (remainder > 0) {
+                leaderboardTbl.setRowHeight(rows - 1, baseHeight + remainder);
+            }
+        }
+    }
+
+    private Font loadCustomFont(String path, float size) {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) {
+                throw new FileNotFoundException(path + " not found");
+            }
+            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(baseFont);
+            return baseFont.deriveFont(size);
+        } catch (Exception e) {
+            System.err.println("Error loading font " + path + ": " + e.getMessage());
+            return new Font("Monospaced", Font.BOLD, (int) size);
+        }
+    }
+
+    private BufferedImage loadSyncScaledImage(String path, int w, int h) {
+        try {
+            URL url = getClass().getResource(path);
+            if (url == null) {
+                throw new FileNotFoundException(path + " not found");
+            }
+
+            Image img = new ImageIcon(url).getImage();
+            if (img == null || img.getWidth(null) <= 0) {
+                throw new IllegalArgumentException("Failed to decode image: " + path);
+            }
+
+            BufferedImage scaled = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = scaled.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            g2.drawImage(img, 0, 0, w, h, null);
+            g2.dispose();
+            return scaled;
+        } catch (Exception e) {
+            System.err.println("Error loading image " + path + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void styleCreamCardPanel(JPanel panel, int topInset) {
+        panel.setOpaque(true);
+        panel.setBackground(CARD_CREAM);
+        panel.setBorder(new AbstractBorder() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int arc = 26;
+                Area outerCorners = new Area(new Rectangle2D.Float(0, 0, w, h));
+                outerCorners.subtract(new Area(new RoundRectangle2D.Float(1, 1, w - 2, h - 2, arc, arc)));
+
+                if (backgroundImage != null && pnlMain != null && pnlMain.getWidth() > 0 && pnlMain.getHeight() > 0) {
+                    Point offset = SwingUtilities.convertPoint(c, 0, 0, pnlMain);
+                    g2.setClip(outerCorners);
+                    g2.drawImage(backgroundImage, -offset.x, -offset.y, pnlMain.getWidth(), pnlMain.getHeight(), null);
+                    g2.setClip(null);
+                }
+
+                g2.setColor(BORDER_NAVY);
+                g2.setStroke(new BasicStroke(2.5f));
+                g2.drawRoundRect(1, 1, w - 3, h - 3, arc, arc);
+                g2.dispose();
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return new Insets(topInset, 16, 16, 16);
+            }
+        });
+    }
+
+    @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
         if (source == playButton) {
+            String playerName = getPlayerName();
 
-            if (getPlayerName().isEmpty()) {
+            if (playerName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter your name!", "Missing Name", JOptionPane.WARNING_MESSAGE);
                 tfName.requestFocus();
                 return;
             }
+
+            started = true;
+            writeScore(playerName, 20);
+            loadTop10();
             dispose();
         }
-
-
     }
 
     private void createUIComponents() {
-
         pnlMain = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -326,16 +507,118 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
                 if (backgroundImage != null) {
                     g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 }
+
+                if (cachedBannerImg == null) {
+                    Font font = (bannerFont != null) ? bannerFont : new Font("Monospaced", Font.BOLD, 105);
+                    cachedBannerImg = createSolidFlappyBanner("FlappyBirb", font);
+                }
+
+                if (cachedBannerBirdImg == null) {
+                    cachedBannerBirdImg = loadSyncScaledImage("/flappy-icon.png", 68, 68);
+                }
+
+                int gap = 16;
+                int birdW = (cachedBannerBirdImg != null) ? cachedBannerBirdImg.getWidth() : 0;
+                int birdH = (cachedBannerBirdImg != null) ? cachedBannerBirdImg.getHeight() : 0;
+                int totalWidth = cachedBannerImg.getWidth() + (birdW > 0 ? gap + birdW : 0);
+
+                int startX = (getWidth() - totalWidth) / 2;
+                int bannerY = 12;
+
+                // Draw "FlappyBirb" on the left, and the bird icon on the right
+                g.drawImage(cachedBannerImg, startX, bannerY, null);
+                if (cachedBannerBirdImg != null) {
+                    int birdY = bannerY + (cachedBannerImg.getHeight() - birdH) / 2 - 2;
+                    g.drawImage(cachedBannerBirdImg, startX + cachedBannerImg.getWidth() + gap, birdY, null);
+                }
             }
         };
     }
 
+    private BufferedImage createSolidFlappyBanner(String text, Font font) {
+        BufferedImage dummy = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gDummy = dummy.createGraphics();
+        gDummy.setFont(font);
+        FontMetrics fm = gDummy.getFontMetrics();
+        int pad = 20;
+        int w = fm.stringWidth(text) + pad * 2;
+        int h = fm.getHeight() + pad * 2;
+        int baselineY = pad + fm.getAscent();
+        gDummy.dispose();
+
+        // draw the raw font outlines
+        BufferedImage outlineImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gOut = outlineImg.createGraphics();
+        gOut.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        gOut.setFont(font);
+        gOut.setColor(new Color(55, 48, 56));
+        gOut.drawString(text, pad, baselineY);
+        gOut.dispose();
+
+        // flood-fill from (0,0) to mark all exterior background pixels
+        boolean[][] outside = new boolean[w][h];
+        ArrayDeque<Point> queue = new ArrayDeque<>();
+        queue.add(new Point(0, 0));
+        outside[0][0] = true;
+
+        int[] dirX = {1, -1, 0, 0};
+        int[] dirY = {0, 0, 1, -1};
+
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            for (int i = 0; i < 4; i++) {
+                int nx = p.x + dirX[i];
+                int ny = p.y + dirY[i];
+                if (nx >= 0 && nx < w && ny >= 0 && ny < h && !outside[nx][ny]) {
+                    if (((outlineImg.getRGB(nx, ny) >>> 24) & 0xFF) == 0) {
+                        outside[nx][ny] = true;
+                        queue.add(new Point(nx, ny));
+                    }
+                }
+            }
+        }
+
+        // create solid white interior mask
+        BufferedImage whiteInterior = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        int whiteRGB = Color.WHITE.getRGB();
+        for (int px = 0; px < w; px++) {
+            for (int py = 0; py < h; py++) {
+                if (!outside[px][py]) {
+                    whiteInterior.setRGB(px, py, whiteRGB);
+                }
+            }
+        }
+
+        // composite in exact layer order
+        BufferedImage finalImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = finalImg.createGraphics();
+
+        // layer a (Back): thin bottom-only drop-shadow
+        BufferedImage darkShadow = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        int darkRGB = new Color(55, 48, 56).getRGB();
+        for (int px = 0; px < w; px++) {
+            for (int py = 0; py < h; py++) {
+                if (!outside[px][py]) {
+                    darkShadow.setRGB(px, py, darkRGB);
+                }
+            }
+        }
+        for (int dy = 1; dy <= 5; dy++) {
+            g2.drawImage(darkShadow, 0, dy, null);
+        }
+
+        // layer b (Middle): solid white fill inside the letters
+        g2.drawImage(whiteInterior, 0, 0, null);
+
+        // layer c (Front): crisp dark inner dividing lines separating each letter
+        g2.drawImage(outlineImg, 0, 0, null);
+
+        g2.dispose();
+        return finalImg;
+    }
+
     public static void main(String[] args) {
         StartLeaderboardDialog app = new StartLeaderboardDialog();
-        app.setContentPane(app.pnlMain);
-        app.setTitle("Flappy Birb");
-        app.pack();
-        app.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         app.setVisible(true);
     }
 }
