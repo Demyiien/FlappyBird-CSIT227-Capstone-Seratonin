@@ -4,8 +4,6 @@
 import flapibirb.view.Game;
 import flapibirb.view.StartLeaderboardDialog;
 
-import java.sql.SQLOutput;
-
 class GameInstance {
 
     private static StartLeaderboardDialog SLDInstance= null;
