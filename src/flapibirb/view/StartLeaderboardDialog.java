@@ -248,8 +248,11 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         }
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(leaderboardFile))) {
+            bw.write("Leaderboard");
+            bw.newLine();
+            bw.newLine();
             for (String[] entry : entries) {
-                bw.write(entry[0] + "," + entry[1]);
+                bw.write(entry[0] + ": " + entry[1]);
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -493,6 +496,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
             }
 
             started = true;
+
             writeScore(playerName, 20);
             loadTop10();
             dispose();
@@ -615,10 +619,5 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
         g2.dispose();
         return finalImg;
-    }
-
-    public static void main(String[] args) {
-        StartLeaderboardDialog app = new StartLeaderboardDialog();
-        app.setVisible(true);
     }
 }
