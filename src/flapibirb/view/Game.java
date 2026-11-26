@@ -31,7 +31,9 @@ public class Game extends JFrame {
     private final Scoreboard scoreboard = new Scoreboard();
 
     private GameTime gameTime;
-    private Timer scoreTimer;
+    private final Timer scoreTimer;
+
+    private boolean dead = false;
 
     public Game() {
         loadScoreFont();
@@ -204,6 +206,10 @@ public class Game extends JFrame {
         return bird;
     }
 
+    public ArrayList<Pipe> getPipes() {
+        return pipes;
+    }
+
     public Scoreboard getScoreboard() {
         return scoreboard;
     }
@@ -234,6 +240,14 @@ public class Game extends JFrame {
 
     public void addPipe() {
         pipes.add(new Pipe(cols + 1 + getCameraX(), rows, cellSize));
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void die() {
+        dead = true;
     }
 
     public static void main(String[] args) {
