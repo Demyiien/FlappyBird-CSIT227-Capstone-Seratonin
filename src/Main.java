@@ -16,6 +16,7 @@ class GameInstance {
     public static StartLeaderboardDialog getInstanceOfSLD() {
         if (SLDInstance == null) {
             SLDInstance = new StartLeaderboardDialog();
+            SLDInstance.setModal(true);
             SLDInstance.setVisible(true);
             return SLDInstance;
         }
@@ -38,15 +39,10 @@ class GameInstance {
 
 public class Main {
     public static void main(String[] args) {
-        StartLeaderboardDialog SLD = GameInstance.getInstanceOfSLD();
+
         while (true) {
-            assert SLD != null;
-            if (!SLD.isVisible()) break;
-            if (SLD.isStarted()) {
-                GameInstance.getInstanceOfGame();
-            }
+            StartLeaderboardDialog SLD = GameInstance.getInstanceOfSLD();
+            Game G = GameInstance.getInstanceOfGame();
         }
-
-
     }
 }
