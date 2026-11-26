@@ -28,6 +28,11 @@ public class GameTime {
                 if (ticks % 250 == 0) {
                     game.addPipe();
                 }
+            } else {
+                // Stop the loop and notify Game so GameFacade can end the session
+                ((Timer) e.getSource()).stop();
+                game.onBirdDied();
+                return;
             }
 
             table.repaint();

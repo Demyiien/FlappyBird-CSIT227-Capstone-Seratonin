@@ -1,5 +1,6 @@
 package flapibirb.view;
 
+import flapibirb.controller.GameFacade;
 import flapibirb.controller.GameTime;
 import flapibirb.controller.SoundManager;
 import flapibirb.model.Bird;
@@ -33,12 +34,23 @@ public class Game extends JFrame {
 
     private GameTime gameTime;
     private Timer scoreTimer;
+    private final GameFacade facade;
+    private final int selectedBirb;
+    private KeyEventDispatcher keyDispatcher;
 
     public Game() {
+        this("Player", 1, null);
+    }
+
+    public Game(String playerName, int selectedBirb, GameFacade facade) {
+        this.facade = facade;
+        this.selectedBirb = selectedBirb;
+        String safeName = (playerName != null && !playerName.trim().isEmpty()) ? playerName.trim() : "Player";
+
         loadScoreFont();
 
         // Initialize the bird (using Point(x=col, y=row)) and game table
-        bird = new CoolBird("Player", new Point(8, 14), cellSize);
+        bird = new CoolBird(safeName, new Point(8, 14), cellSize);
         initializeTable();
 
         scoreTimer = new Timer(1000, e -> {
@@ -106,7 +118,10 @@ public class Game extends JFrame {
         });
 
         // Wait for the first jump key press to start GameTime & scoreboard, and require key release between jumps
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+        keyDispatcher = e -> {
+            if (!bird.isAlive()) {
+                return false;
+            }
             int code = e.getKeyCode();
             if (code == KeyEvent.VK_SPACE || code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
                 if (e.getID() == KeyEvent.KEY_PRESSED) {
@@ -124,12 +139,16 @@ public class Game extends JFrame {
                 }
             }
             return false;
-        });
+        };
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
 
-        SoundManager.load("fly", "assets/sounds/flappy-bird-fly.wav");
-        SoundManager.load("point", "assets/sounds/flappy-bird-point.wav");
-        SoundManager.load("hit", "assets/sounds/flappy-bird-die-punch.wav");
-        SoundManager.load("die", "assets/sounds/flappy-bird-die.wav");
+        // Fallback sound loading when Game is constructed directly without GameFacade
+        if (facade == null) {
+            SoundManager.load("fly", "assets/sounds/flappy-bird-fly.wav");
+            SoundManager.load("point", "assets/sounds/flappy-bird-point.wav");
+            SoundManager.load("hit", "assets/sounds/flappy-bird-die-punch.wav");
+            SoundManager.load("die", "assets/sounds/flappy-bird-die.wav");
+        }
     }
 
     private void loadScoreFont() {
@@ -243,10 +262,42 @@ public class Game extends JFrame {
         pipes.add(new Pipe(cols + 1 + getCameraX(), rows, cellSize));
     }
 
+    public GameTime getGameTime() {
+        return gameTime;
+    }
+
+    public int getSelectedBirb() {
+        return selectedBirb;
+    }
+
+    // Stops both the main loop and score timer
+    public void stopTimers() {
+        if (gameTime != null) {
+            gameTime.stop();
+        }
+        if (scoreTimer != null) {
+            scoreTimer.stop();
+        }
+    }
+
+    // Stops timers, detaches global key listener so it doesn't leak, and closes the frame
+    public void cleanupAndDispose() {
+        stopTimers();
+        if (keyDispatcher != null) {
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyDispatcher);
+            keyDispatcher = null;
+        }
+        dispose();
+    }
+
+    // Hands session cleanup and leaderboard update back to the facade on bird death
+    public void onBirdDied() {
+        if (facade != null) {
+            facade.endSession(scoreboard.getCounter());
+        }
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Game screen = new Game();
-            screen.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new GameFacade().startSession());
     }
 }

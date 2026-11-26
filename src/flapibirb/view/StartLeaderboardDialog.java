@@ -230,12 +230,15 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         return started;
     }
 
-    // file writing
-    private void writeScore(String playerName, int score) {
+    // Saves a score to leaderboard.txt in descending order (used by GameFacade on session end)
+    public static void saveScore(String playerName, int score) {
+        if (playerName == null || playerName.trim().isEmpty()) {
+            return;
+        }
+
         String cleanName = playerName.trim().replace(",", " ").replace(":", " ");
         List<String[]> entries = readAllFromFile();
 
-        // placeholder functions muna cos collision logic is wala pa
         // adds names to the first index
         entries.add(0, new String[]{cleanName, String.valueOf(score)});
 
@@ -257,8 +260,12 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         }
     }
 
+    private void writeScore(String playerName, int score) {
+        saveScore(playerName, score);
+    }
+
     // file reading with column-count and NumberFormatException guards
-    private List<String[]> readAllFromFile() {
+    private static List<String[]> readAllFromFile() {
         List<String[]> entries = new ArrayList<>();
         File file = new File(leaderboardFile);
         if (!file.exists()) {
@@ -493,8 +500,6 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
             }
 
             started = true;
-            writeScore(playerName, 20);
-            loadTop10();
             dispose();
         }
     }
@@ -615,10 +620,5 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
 
         g2.dispose();
         return finalImg;
-    }
-
-    public static void main(String[] args) {
-        StartLeaderboardDialog app = new StartLeaderboardDialog();
-        app.setVisible(true);
     }
 }
