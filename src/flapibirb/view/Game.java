@@ -1,6 +1,7 @@
 package flapibirb.view;
 
 import flapibirb.controller.GameTime;
+import flapibirb.controller.SoundManager;
 import flapibirb.model.Bird;
 import flapibirb.model.CoolBird;
 import flapibirb.model.Pipe;
@@ -42,6 +43,7 @@ public class Game extends JFrame {
 
         scoreTimer = new Timer(1000, e -> {
             if (bird.isAlive()) {
+                SoundManager.play("point");
                 scoreboard.increment();
                 mainPanel.repaint();
             } else {
@@ -123,6 +125,11 @@ public class Game extends JFrame {
             }
             return false;
         });
+
+        SoundManager.load("fly", "assets/sounds/flappy-bird-fly.wav");
+        SoundManager.load("point", "assets/sounds/flappy-bird-point.wav");
+        SoundManager.load("hit", "assets/sounds/flappy-bird-die-punch.wav");
+        SoundManager.load("die", "assets/sounds/flappy-bird-die.wav");
     }
 
     private void loadScoreFont() {

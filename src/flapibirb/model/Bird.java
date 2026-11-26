@@ -1,6 +1,7 @@
 package flapibirb.model;
 
 import flapibirb.controller.GObject;
+import flapibirb.controller.SoundManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,6 +109,7 @@ public abstract class Bird implements GObject {
         if (!isAlive || !canJump) {
             return;
         }
+        SoundManager.play("fly");
         canJump = false;
         velocity = JUMP_VELOCITY;
         setRotationAngle(JUMP_UP_ANGLE);
@@ -156,6 +158,8 @@ public abstract class Bird implements GObject {
 
     @Override
     public void die() {
+        SoundManager.play("hit");
+        SoundManager.play("die");
         isAlive = false;
         velocity = 0.0;
     }
