@@ -32,7 +32,7 @@ The project incorporates creational and structural design patterns to promote co
 
 - **Facade (`flapibirb.controller.GameFacade`):** Provides a unified entry point through methods such as `startSession()`, `endSession(int score)`, and `preloadSounds()`. It coordinates the `StartLeaderboardDialog`, `Game` window, `SoundManager`, and leaderboard score persistence, allowing the `Main` class to interact with these subsystems without depending on their individual implementations.
 
-- **[Second Structural Pattern]:** [Add the pattern name, implementing class, and a brief explanation of how it simplifies or organizes interactions between components.]
+- **Decorator (In Development):** Currently being implemented to extend existing game components with additional behavior dynamically without modifying their original classes. This pattern will allow new features or functionalities to be added through decorator classes while preserving the existing component structure.
 
 ## Requirements
 
