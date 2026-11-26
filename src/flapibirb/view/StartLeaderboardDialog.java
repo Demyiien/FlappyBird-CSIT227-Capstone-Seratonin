@@ -196,19 +196,7 @@ public class StartLeaderboardDialog extends JDialog implements ActionListener {
         setContentPane(pnlMain);
         setTitle("Flappy Birb");
         setModal(true);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                JOptionPane.showMessageDialog(
-                        StartLeaderboardDialog.this,
-                        "Please enter your name and click Start to play!",
-                        "Start Game Required",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                tfName.requestFocus();
-            }
-        });
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         pack();
         setLocationRelativeTo(null);
     }
