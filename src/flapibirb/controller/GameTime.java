@@ -18,15 +18,27 @@ public class GameTime {
             game.handleObjects();
 
             if (bird.isAlive()) {
-                if (ticks % 4 == 0) {
+                if (ticks % 2 == 0) {
                     bird.updatePhysics(rows);
                 }
-                if (ticks % 10 == 0) {
+                if (ticks % 7 == 0) {
                     bird.setCol(bird.getCol() + 1);
                     game.setCameraX(game.getCameraX() + 1);
                 }
-                if (ticks % 250 == 0) {
+                if (ticks % 125 == 0) {
                     game.addPipe();
+                }
+
+                // check floor and pipe collisions every tick so fast falls don't skip past
+                if (bird.getPos().y >= rows - 2) {
+                    bird.die();
+                } else {
+                    for (Pipe pipe : game.getPipes()) {
+                        if (pipe.inPipe(bird.getPos().x, bird.getPos().y, 2, 2)) {
+                            bird.die();
+                            break;
+                        }
+                    }
                 }
             }
 

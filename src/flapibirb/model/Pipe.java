@@ -9,104 +9,102 @@ import java.util.Random;
 
 public class Pipe implements GObject {
 
-    private int col;
-    private final int pipeCols = 3; // pipe is 3 cells wide
-    private final int minPipeHeight = 2; // minimum size is 3x2 for both pipes
-    private final int gapRows = 8; // non-collision space between top and bottom pipes
+    private static final Random RANDOM = new Random();
 
-    private int topPipeHeight;
-    private int bottomPipeStartRow;
+    // cached pipe sprites so we don't reload 6 pngs from disk on every pipe spawn
+    private static int cachedCellSize = -1;
+    private static ImageIcon tipLeftIcon;
+    private static ImageIcon tipCenterIcon;
+    private static ImageIcon tipRightIcon;
+    private static ImageIcon hoseLeftIcon;
+    private static ImageIcon hoseCenterIcon;
+    private static ImageIcon hoseRightIcon;
+
+    private final int pipeX;
+    private final int pipeY;
+    private final int width;
+    private final int height;
 
     private final ImageIcon[] pipeTopIcons;
     private final ImageIcon[] pipeBottomIcons;
 
     public Pipe(int startCol, int totalRows, int cellSize) {
-        this.col = startCol;
+        width = RANDOM.nextInt(2, 5);
+        height = RANDOM.nextInt(8, 10);
 
-        // Load split pipe tip and hose images
-        Image rawPipeTip = new ImageIcon("assets/images/pipe-tip.png").getImage();
-        BufferedImage pipeTipImage = new BufferedImage(
-                rawPipeTip.getWidth(null),
-                rawPipeTip.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB
-        );
-        Graphics2D graphicsPipeTip = pipeTipImage.createGraphics();
-        graphicsPipeTip.drawImage(rawPipeTip, 0, 0, null);
-        graphicsPipeTip.dispose();
+        pipeX = startCol;
+        pipeY = RANDOM.nextInt(2, totalRows - 2 - height);
 
-        Image rawPipeHose = new ImageIcon("assets/images/pipe-hose.png").getImage();
-        BufferedImage pipeHoseImage = new BufferedImage(
-                rawPipeHose.getWidth(null),
-                rawPipeHose.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB
-        );
-        Graphics2D graphicsPipeHose = pipeHoseImage.createGraphics();
-        graphicsPipeHose.drawImage(rawPipeHose, 0, 0, null);
-        graphicsPipeHose.dispose();
+        ensureSpritesLoaded(cellSize);
 
-        // Resize the pipe rim and body to match the width of 3 cells
-        int pipePixelWidth = pipeCols * cellSize;
-        BufferedImage scaledPipeTop = new BufferedImage(pipePixelWidth, cellSize, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gTop = scaledPipeTop.createGraphics();
-        gTop.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gTop.drawImage(pipeTipImage, 0, 0, pipePixelWidth, cellSize, null);
-        gTop.dispose();
-
-        BufferedImage scaledPipeBottom = new BufferedImage(pipePixelWidth, cellSize, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gBot = scaledPipeBottom.createGraphics();
-        gBot.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gBot.drawImage(pipeHoseImage, 0, 0, pipePixelWidth, cellSize, null);
-        gBot.dispose();
-
-        // Slice the pipe rim and body into 3 columns (left, middle, right)
-        pipeTopIcons = new ImageIcon[pipeCols];
-        pipeBottomIcons = new ImageIcon[pipeCols];
-        for (int c = 0; c < pipeCols; c++) {
-            pipeTopIcons[c] = new ImageIcon(scaledPipeTop.getSubimage(c * cellSize, 0, cellSize, cellSize));
-            pipeBottomIcons[c] = new ImageIcon(scaledPipeBottom.getSubimage(c * cellSize, 0, cellSize, cellSize));
+        // build left, middle, and right columns for the pipe rim and body
+        pipeTopIcons = new ImageIcon[width];
+        pipeBottomIcons = new ImageIcon[width];
+        for (int c = 0; c < width; c++) {
+            pipeTopIcons[c] = (c == 0) ? tipLeftIcon : (c == width - 1) ? tipRightIcon : tipCenterIcon;
+            pipeBottomIcons[c] = (c == 0) ? hoseLeftIcon : (c == width - 1) ? hoseRightIcon : hoseCenterIcon;
         }
-
-        randomizeHeight(totalRows);
     }
 
-    // Randomize top and bottom pipe heights while keeping at least 3x2 cells for each
-    public void randomizeHeight(int totalRows) {
-        Random random = new Random();
-        int maxTopHeight = totalRows - gapRows - minPipeHeight;
-        this.topPipeHeight = minPipeHeight + random.nextInt(maxTopHeight - minPipeHeight + 1);
-        this.bottomPipeStartRow = topPipeHeight + gapRows;
+    // load and scale all 6 pipe slice sprites once per cell size
+    private static void ensureSpritesLoaded(int cellSize) {
+        if (cachedCellSize == cellSize) {
+            return;
+        }
+        tipLeftIcon = loadScaledIcon("assets/images/pipe-tip-left.png", cellSize);
+        tipCenterIcon = loadScaledIcon("assets/images/pipe-tip-center.png", cellSize);
+        tipRightIcon = loadScaledIcon("assets/images/pipe-tip-right.png", cellSize);
+        hoseLeftIcon = loadScaledIcon("assets/images/pipe-hose-left.png", cellSize);
+        hoseCenterIcon = loadScaledIcon("assets/images/pipe-hose-center.png", cellSize);
+        hoseRightIcon = loadScaledIcon("assets/images/pipe-hose-right.png", cellSize);
+        cachedCellSize = cellSize;
     }
 
-    // Returns the pipe icon for a given cell, or null if the cell is in the gap or outside the pipe
+    // draw raw png into an argb buffer sized to cellSize and dispose graphics
+    private static ImageIcon loadScaledIcon(String path, int cellSize) {
+        Image raw = new ImageIcon(path).getImage();
+        BufferedImage buf = new BufferedImage(cellSize, cellSize, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = buf.createGraphics();
+        g2.drawImage(raw, 0, 0, cellSize, cellSize, null);
+        g2.dispose();
+        return new ImageIcon(buf);
+    }
+
+    // returns the pipe icon for a given cell, or null if the cell is in the gap or outside the pipe
     public ImageIcon getIconAt(int r, int c) {
-        if (c < col || c >= col + pipeCols) {
+        if (c < pipeX || c >= pipeX + width) {
             return null;
         }
 
-        int pipePartCol = c - col;
+        int pipePartCol = c - pipeX;
 
-        // Top pipe: body on top, rim right above the gap
-        if (r < topPipeHeight - 1) {
+        // top pipe: body on top, rim right above the gap
+        if (r < pipeY - 1) {
             return pipeBottomIcons[pipePartCol];
-        } else if (r == topPipeHeight - 1) {
+        } else if (r == pipeY - 1) {
             return pipeTopIcons[pipePartCol];
         }
-        // Bottom pipe: rim right below the gap, body going down to the bottom
-        else if (r == bottomPipeStartRow) {
+        // bottom pipe: rim right below the gap, body going down to the bottom
+        else if (r == pipeY + height) {
             return pipeTopIcons[pipePartCol];
-        } else if (r > bottomPipeStartRow) {
+        } else if (r > pipeY + height) {
             return pipeBottomIcons[pipePartCol];
         }
 
         return null;
     }
 
-    public int getCol() {
-        return col;
+    // check aabb overlap between the bird hitbox (x, y, w, h) and the top/bottom pipe segments
+    public boolean inPipe(double x, double y, int w, int h) {
+        boolean overlapsX = x < pipeX + width && x + w > pipeX;
+        if (!overlapsX) {
+            return false;
+        }
+        return y < pipeY || y + h > pipeY + height;
     }
 
-    public void setCol(int col) {
-        this.col = col;
+    public int getCol() {
+        return pipeX;
     }
 
     @Override
